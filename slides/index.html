@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Sandbox on EKS: Hardware-Isolated microVM Pods for AI Agents</title>
+<meta name="description" content="KubeCon NA 2026 Demo Theater. Carlos Santana and Todd Neal, AWS.">
+<style>
+  :root {
+    --bg: #0f1419; --panel: #161d26; --ink: #e8edf2; --muted: #a7b3bf;
+    --accent: #ff9900; --blue: #4aa3ff; --green: #3ecf8e; --red: #ff6b6b; --violet: #b18cff;
+    --line: #2a3542; --code: #0b1016;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif; }
+  .deck { height: 100%; }
+  section.slide { display: none; height: 100vh; padding: 5vh 6vw 7vh; flex-direction: column; }
+  section.slide.active { display: flex; }
+  h1 { font-size: 3.6rem; margin: 0 0 .4em; letter-spacing: -.02em; line-height: 1.1; }
+  h2 { font-size: 3rem; margin: 0 0 .5em; letter-spacing: -.01em; line-height: 1.15; }
+  h2 .tag { font-size: 1.1rem; vertical-align: middle; margin-left: .7em; padding: .15em .7em;
+    border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-weight: 500; letter-spacing: .04em; }
+  p, li { font-size: 2rem; line-height: 1.4; }
+  li { margin: .3em 0; }
+  .muted { color: var(--muted); }
+  .accent { color: var(--accent); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.2rem; align-items: start; flex: 1; }
+  .grid2 > *, .grid3 > *, .cta > * { min-width: 0; }
+  .grid2.wide-left { grid-template-columns: 1.3fr 1fr; }
+  .grid2.wide-left pre { font-size: 1.35rem; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1.1rem 1.4rem; }
+  .card h3 { margin: 0 0 .4em; font-size: 2.1rem; }
+  .card p, .card li { font-size: 1.75rem; }
+  pre { background: var(--code); color: var(--ink); border: 1px solid var(--line); border-radius: 12px;
+    padding: 1.1rem 1.4rem; font-size: 1.6rem; line-height: 1.45; overflow: auto; margin: 0; }
+  code { font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace; }
+  p code, li code, td code { background: var(--code); padding: .05em .35em; border-radius: 6px; font-size: .9em; white-space: nowrap; }
+  .k { color: var(--blue); } .s { color: var(--green); } .c { color: var(--muted); } .h { color: var(--accent); }
+  table { border-collapse: collapse; width: 100%; font-size: 2.1rem; }
+  th, td { text-align: left; padding: .6rem .9rem; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.3; }
+  th { color: var(--muted); font-weight: 600; font-size: 1.4rem; text-transform: uppercase; letter-spacing: .06em; }
+  .title-slide, section.slide.center { justify-content: center; }
+  section.slide.center .grid2 { align-content: center; }
+  .title-slide h1 { font-size: 4.4rem; }
+  .title-slide .big { font-size: 2.3rem; }
+  .big { font-size: 1.9rem; line-height: 1.4; }
+  .lead { font-size: 2.4rem; line-height: 1.35; margin: 0 0 .6em; }
+  .pill { display: inline-block; padding: .25em .8em; border-radius: 999px; background: var(--panel);
+    border: 1px solid var(--line); margin: .2em .3em .2em 0; font-size: 1.6rem; }
+  .speakers { display: flex; gap: 4rem; margin-top: 2.6rem; }
+  .speaker { display: flex; align-items: center; gap: 1.2rem; }
+  .speaker img, .speaker .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); }
+  .speaker .avatar { display: flex; align-items: center; justify-content: center; background: var(--panel); font-size: 2.6rem; font-weight: 700; color: var(--accent); }
+  .speaker-name { font-size: 1.9rem; font-weight: 700; line-height: 1.2; }
+  .speaker-title { font-size: 1.5rem; color: var(--muted); }
+  .half { font-size: 1.15rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 .3em; }
+  .fill { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; }
+  .fill svg { width: 100%; height: 100%; max-height: 72vh; }
+  svg text { font-family: inherit; }
+  .caption { color: var(--muted); font-size: 1.7rem; margin: .6rem 0 0; text-align: center; }
+  .terminal { background: #05080b; border-radius: 12px; border: 1px solid var(--line); padding: 1rem 1.3rem;
+    font-family: "JetBrains Mono", Menlo, monospace; font-size: 1.6rem; line-height: 1.5; white-space: pre; overflow: auto; margin: 0; }
+  .terminal .p { color: var(--green); } .terminal .d { color: var(--muted); } .terminal .hl { color: var(--accent); font-weight: 700; }
+  .watch { border-color: var(--accent); }
+  .watch h3 { color: var(--accent); }
+  .watch ol { margin: 0; padding-left: 1.4em; }
+  .cta { display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: center; flex: 1; }
+  .cta ul { columns: 2; column-gap: 2.4rem; padding-left: 1.2em; margin: .4em 0 0; }
+  .cta li { break-inside: avoid; font-size: 1.9rem; margin: 0 0 .4em; }
+  .qr { margin: 0; text-align: center; }
+  .qr img { width: 360px; height: 360px; display: block; border-radius: 12px; background: #fff; }
+  .qr figcaption { margin-top: .8rem; font-size: 1.5rem; line-height: 1.4; color: var(--ink); }
+  .foot { position: fixed; bottom: 2.2vh; left: 6vw; right: 6vw; display: flex; justify-content: space-between;
+    color: var(--muted); font-size: 1.1rem; pointer-events: none; }
+  a { color: var(--blue); }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* Notes: hidden in the deck, shown at the bottom with "n", and in the presenter view. */
+  .notes { display: none; position: fixed; bottom: 0; left: 0; right: 0; max-height: 36vh; overflow: auto;
+    background: #1d2733; border-top: 2px solid var(--accent); padding: 1rem 6vw; font-size: 1.15rem; color: var(--ink); }
+  body.show-notes .slide.active .notes { display: block; }
+  body.show-notes .foot { display: none; }
+  .notes p, .notes li { font-size: inherit; line-height: 1.5; }
+  .notes ul { margin: .3em 0 .5em; padding-left: 1.3em; }
+  .notes i { color: var(--accent); }
+  .notes code { background: var(--code); padding: .05em .35em; border-radius: 6px; font-size: .9em; }
+
+  /* Presenter view: index.html?presenter, opened from the deck with "p". */
+  body.presenter { overflow: hidden; }
+  body.presenter .deck, body.presenter .foot { display: none; }
+  body.embed { overflow: hidden; cursor: default; }
+  .pv { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);
+    gap: 1rem 1.4rem; height: 100vh; padding: 1rem 1.4rem; }
+  .pv-bar { grid-column: 1 / -1; display: flex; align-items: center; gap: 1.4rem; font-size: 1.1rem; color: var(--muted); }
+  .pv-bar b { color: var(--ink); font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+  .pv-bar .pv-title { color: var(--ink); flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .pv-bar .pv-who { color: var(--accent); font-weight: 600; }
+  .pv-bar button { background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px;
+    padding: .35rem .8rem; font: inherit; cursor: pointer; min-width: 44px; min-height: 36px; }
+  .pv-bar button:hover, .pv-bar button:focus-visible { border-color: var(--accent); }
+  .pv-left { display: flex; flex-direction: column; gap: .8rem; min-height: 0; }
+  .pv-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--bg); }
+  .pv-frame.cur { border: 2px solid var(--accent); }
+  .pv-frame iframe { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; border: 0;
+    transform-origin: 0 0; pointer-events: none; }
+  .pv-next { display: grid; grid-template-columns: 48% 1fr; gap: 1rem; align-items: start; }
+  .pv-label { color: var(--muted); font-size: 1rem; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .3rem; }
+  .pv-next-title { font-size: 1.25rem; line-height: 1.35; }
+  .pv-end { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 1.4rem; }
+  .pv-notes { min-height: 0; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 1.2rem 1.5rem; font-size: var(--pv-notes-size, 1.6rem); line-height: 1.5; }
+  .pv-notes p, .pv-notes li { font-size: inherit; line-height: inherit; }
+  .pv-notes p { margin: 0 0 .6em; }
+  .pv-notes ul { margin: .2em 0 .8em; padding-left: 1.3em; }
+  .pv-notes li { margin: .3em 0; }
+  .pv-notes b { color: #fff; }
+  .pv-notes i { color: var(--accent); }
+  .pv-notes code { background: var(--code); padding: .05em .35em; border-radius: 6px; font-size: .88em; }
+  .pv-keys { color: var(--muted); font-size: .95rem; }
+
+  /* Key help: "?" */
+  .help { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.6); }
+  .help[open] { display: flex; }
+  .help .box { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1.6rem 2rem; min-width: 420px; }
+  .help h3 { margin: 0 0 .6em; font-size: 1.6rem; }
+  .help dl { display: grid; grid-template-columns: auto 1fr; gap: .4rem 1.4rem; margin: 0; font-size: 1.2rem; }
+  .help dt { color: var(--accent); font-family: Menlo, monospace; }
+  .help dd { margin: 0; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  @media (max-width: 1100px) { .grid2, .grid3, .cta { grid-template-columns: 1fr; } .cta ul { columns: 1; } }
+</style>
+</head>
+<body>
+<div class="deck" role="region" aria-roledescription="slide deck" aria-label="Slides">
+
+<!-- 1 -->
+<section class="slide title-slide" data-who="Carlos" aria-label="Slide 1 of 20: Title">
+  <p class="half">KubeCon + CloudNativeCon North America 2026 &middot; Demo Theater</p>
+  <h1>Agent Sandbox on EKS:<br>Hardware-Isolated microVM Pods for AI Agents</h1>
+  <p class="muted big">Give every agent its own kernel, on a normal pod spec,<br>with open source components you can read.</p>
+  <div class="speakers">
+    <div class="speaker">
+      <img src="carlos-santana.jpg" alt="">
+      <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div></div>
+    </div>
+    <div class="speaker">
+      <div class="avatar" aria-hidden="true">TN</div>
+      <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p><b>Carlos.</b> Twenty minutes, two halves.</p>
+    <ul>
+      <li>I take the <b>why</b> and the <b>Kubernetes-native shape</b>: one line on a pod spec, agent-sandbox, scoped egress and credentials, then a <b>live demo</b>.</li>
+      <li>Todd takes <b>how it is built</b>: what sits under a RuntimeClass, containerd and Firecracker, and why <b>Cedar</b> policy is what makes a confidential sandbox trustworthy.</li>
+      <li>We close with the <b>blueprints</b> you can run this afternoon.</li>
+    </ul>
+    <p><i>Next:</i> the problem.</p>
+  </aside>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-who="Carlos" aria-label="Slide 2 of 20">
+  <h2>Agents now write and run their own code</h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 500" role="img" aria-label="An agent loop generates code, which runs as a container on the same node and the same Linux kernel as the payments and user services.">
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <!-- agent loop -->
+      <rect x="40" y="110" width="280" height="250" rx="16" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
+      <text x="180" y="150" text-anchor="middle" fill="#e8edf2" font-size="30" font-weight="700">Agent loop</text>
+      <text x="190" y="200" text-anchor="middle" fill="#a7b3bf" font-size="25">model reasons</text>
+      <text x="190" y="240" text-anchor="middle" fill="#a7b3bf" font-size="25">writes code</text>
+      <text x="190" y="280" text-anchor="middle" fill="#a7b3bf" font-size="25">runs it</text>
+      <text x="190" y="320" text-anchor="middle" fill="#a7b3bf" font-size="25">repeats</text>
+      <path d="M320 235 L490 235" stroke="#a7b3bf" stroke-width="3" marker-end="url(#a)"/>
+      <text x="405" y="200" text-anchor="middle" fill="#ff9900" font-size="21">model-generated</text>
+      <text x="405" y="222" text-anchor="middle" fill="#ff9900" font-size="21">code</text>
+      <!-- node -->
+      <rect x="500" y="60" width="660" height="400" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+      <text x="525" y="98" fill="#a7b3bf" font-size="25">Kubernetes node</text>
+      <rect x="530" y="130" width="180" height="190" rx="12" fill="#2b1b0e" stroke="#ff9900" stroke-width="2"/>
+      <text x="620" y="200" text-anchor="middle" fill="#ff9900" font-size="25" font-weight="700">generated</text>
+      <text x="620" y="230" text-anchor="middle" fill="#ff9900" font-size="25" font-weight="700">code</text>
+      <text x="620" y="275" text-anchor="middle" fill="#a7b3bf" font-size="21">untrusted</text>
+      <rect x="740" y="130" width="180" height="190" rx="12" fill="#0f1419" stroke="#2a3542" stroke-width="2"/>
+      <text x="830" y="215" text-anchor="middle" fill="#e8edf2" font-size="25">payments</text>
+      <text x="830" y="275" text-anchor="middle" fill="#a7b3bf" font-size="21">production</text>
+      <rect x="950" y="130" width="180" height="190" rx="12" fill="#0f1419" stroke="#2a3542" stroke-width="2"/>
+      <text x="1040" y="215" text-anchor="middle" fill="#e8edf2" font-size="25">user data</text>
+      <text x="1040" y="275" text-anchor="middle" fill="#a7b3bf" font-size="21">production</text>
+      <rect x="530" y="350" width="600" height="70" rx="12" fill="#3a1a1a" stroke="#ff6b6b" stroke-width="2"/>
+      <text x="830" y="394" text-anchor="middle" fill="#ff6b6b" font-size="28" font-weight="700">one shared Linux kernel</text>
+    </svg>
+  </div>
+  <p class="caption">Model-generated code is untrusted code, and today it often lands next to your production services.</p>
+  <aside class="notes">
+    <p>Coding agents, data agents, research agents all do the same thing now: the model <b>writes code and executes it</b> to get an answer.</p>
+    <ul>
+      <li>That code is <b>untrusted by construction</b>: nobody reviewed it, and the prompt that produced it may have come from a web page or a ticket.</li>
+      <li>In a plain cluster it runs as a container, which means <b>on the kernel your production pods share</b>. A kernel bug or a container escape is one hop from payments.</li>
+    </ul>
+    <p><i>Next:</i> the pattern the industry is converging on.</p>
+  </aside>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-who="Carlos" aria-label="Slide 3 of 20">
+  <h2>Separate reasoning from execution</h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 500" role="img" aria-label="A control plane that runs the agentic loop sends work to a sandbox inside your own cluster; the boundary around the sandbox is highlighted with the question: how strong is it?">
+      <defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <rect x="40" y="90" width="420" height="320" rx="16" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
+      <text x="250" y="135" text-anchor="middle" fill="#4aa3ff" font-size="30" font-weight="700">Control plane: reasoning</text>
+      <text x="250" y="185" text-anchor="middle" fill="#e8edf2" font-size="25">the agentic loop</text>
+      <text x="250" y="222" text-anchor="middle" fill="#a7b3bf" font-size="23">model calls, planning, tools</text>
+      <text x="250" y="259" text-anchor="middle" fill="#a7b3bf" font-size="23">a managed service or your driver</text>
+      <text x="250" y="330" text-anchor="middle" fill="#a7b3bf" font-size="23">holds no production credentials</text>
+      <text x="250" y="365" text-anchor="middle" fill="#a7b3bf" font-size="23">never runs the code</text>
+      <path d="M460 230 L690 230" stroke="#a7b3bf" stroke-width="3" marker-end="url(#b)"/>
+      <text x="575" y="215" text-anchor="middle" fill="#e8edf2" font-size="23">run this</text>
+      <path d="M690 275 L460 275" stroke="#a7b3bf" stroke-width="3" marker-end="url(#b)"/>
+      <text x="575" y="305" text-anchor="middle" fill="#e8edf2" font-size="23">result</text>
+      <rect x="700" y="60" width="460" height="380" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+      <text x="930" y="100" text-anchor="middle" fill="#a7b3bf" font-size="25">Your cluster: execution</text>
+      <rect x="760" y="130" width="340" height="250" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="5" stroke-dasharray="14 10"/>
+      <text x="930" y="200" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">sandbox</text>
+      <text x="930" y="240" text-anchor="middle" fill="#a7b3bf" font-size="23">runs the generated code</text>
+      <text x="930" y="275" text-anchor="middle" fill="#a7b3bf" font-size="23">your network, your data</text>
+      <text x="930" y="310" text-anchor="middle" fill="#a7b3bf" font-size="23">your identity model</text>
+      <text x="930" y="420" text-anchor="middle" fill="#ff9900" font-size="30" font-weight="700">how strong is this boundary?</text>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p>The pattern that is emerging: <b>an external control plane runs the loop</b>, and the code runs in a <b>sandbox you own</b>, inside your own cluster, next to your data.</p>
+    <ul>
+      <li>The managed-agent products do this. Open source frameworks do this. It is the right split.</li>
+      <li>But it moves the whole question to <b>one place</b>: the dashed line. Everything the agent can reach, it reaches from inside that box.</li>
+    </ul>
+    <p><i>Next:</i> what that line can be made of.</p>
+  </aside>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-who="Carlos" aria-label="Slide 4 of 20">
+  <h2>What the boundary can be made of</h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 500" role="img" aria-label="Four columns: containers on a shared kernel; a userspace kernel that intercepts syscalls, soft isolation; a VM with its own guest kernel, VM isolation; and a hardware-isolated microVM where the Nitro hypervisor enforces CPU and memory isolation, hardware isolation.">
+      <g>
+        <rect x="30" y="40" width="270" height="420" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+        <text x="165" y="85" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">Container</text>
+        <rect x="50" y="130" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="165" y="168" text-anchor="middle" fill="#e8edf2" font-size="23">process</text>
+        <rect x="50" y="210" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="165" y="248" text-anchor="middle" fill="#a7b3bf" font-size="20">namespaces, cgroups</text>
+        <rect x="50" y="330" width="230" height="60" rx="10" fill="#3a1a1a" stroke="#ff6b6b"/><text x="165" y="368" text-anchor="middle" fill="#ff6b6b" font-size="23">node kernel</text>
+        <text x="165" y="435" text-anchor="middle" fill="#a7b3bf" font-size="22">shared kernel</text>
+      </g>
+      <g>
+        <rect x="320" y="40" width="270" height="420" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+        <text x="455" y="85" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">Userspace kernel</text>
+        <rect x="340" y="130" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="455" y="168" text-anchor="middle" fill="#e8edf2" font-size="23">process</text>
+        <rect x="340" y="210" width="230" height="60" rx="10" fill="#1a2a3a" stroke="#4aa3ff"/><text x="455" y="248" text-anchor="middle" fill="#4aa3ff" font-size="20">syscall interception</text>
+        <rect x="340" y="330" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="455" y="368" text-anchor="middle" fill="#a7b3bf" font-size="23">node kernel</text>
+        <text x="455" y="435" text-anchor="middle" fill="#a7b3bf" font-size="22">soft isolation, e.g. gVisor</text>
+      </g>
+      <g>
+        <rect x="610" y="40" width="270" height="420" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+        <text x="745" y="85" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">VM</text>
+        <rect x="630" y="130" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="745" y="168" text-anchor="middle" fill="#e8edf2" font-size="23">process</text>
+        <rect x="630" y="210" width="230" height="60" rx="10" fill="#1a3a2a" stroke="#3ecf8e"/><text x="745" y="248" text-anchor="middle" fill="#3ecf8e" font-size="23">guest kernel</text>
+        <rect x="630" y="290" width="230" height="40" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="745" y="318" text-anchor="middle" fill="#a7b3bf" font-size="21">VMM on the node</text>
+        <rect x="630" y="350" width="230" height="40" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="745" y="378" text-anchor="middle" fill="#a7b3bf" font-size="21">node kernel, KVM</text>
+        <text x="745" y="435" text-anchor="middle" fill="#a7b3bf" font-size="22">VM isolation, e.g. Kata</text>
+      </g>
+      <g>
+        <rect x="900" y="40" width="270" height="420" rx="16" fill="#161d26" stroke="#ff9900" stroke-width="3"/>
+        <text x="1035" y="85" text-anchor="middle" fill="#ff9900" font-size="28" font-weight="700">Hardware-isolated</text>
+        <rect x="920" y="130" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="1035" y="168" text-anchor="middle" fill="#e8edf2" font-size="23">process</text>
+        <rect x="920" y="210" width="230" height="60" rx="10" fill="#1a3a2a" stroke="#3ecf8e"/><text x="1035" y="248" text-anchor="middle" fill="#3ecf8e" font-size="23">guest kernel</text>
+        <rect x="920" y="290" width="230" height="100" rx="10" fill="#2b1b0e" stroke="#ff9900"/>
+        <text x="1035" y="330" text-anchor="middle" fill="#ff9900" font-size="22">Nitro hypervisor</text>
+        <text x="1035" y="360" text-anchor="middle" fill="#ff9900" font-size="20">first-level guest</text>
+        <text x="1035" y="425" text-anchor="middle" fill="#a7b3bf" font-size="22">hardware isolation</text>
+        <text x="1035" y="447" text-anchor="middle" fill="#a7b3bf" font-size="22">Nitro sandbox</text>
+      </g>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p>Four ways to draw the line, each a <b>different boundary</b>, not a ranking of good and bad.</p>
+    <ul>
+      <li><b>Containers</b>: namespaces and cgroups on one kernel. Great density, shared kernel.</li>
+      <li><b>Userspace kernel</b>, gVisor: intercepts syscalls, so the node kernel sees fewer of them. Soft isolation.</li>
+      <li><b>VM</b>, Kata: the pod gets its own guest kernel, run by a VMM on the node, on top of KVM. VM isolation.</li>
+      <li><b>Hardware-isolated microVM</b>: same idea, own kernel, but the sandbox is a <b>first-level guest of the Nitro hypervisor</b>. CPU and memory isolation between sandboxes is enforced in hardware, with no nested virtualization.</li>
+    </ul>
+    <p>This talk is about the fourth column: <b>hardware-level isolation</b> for every agent.</p>
+    <p><i>Next:</i> what that looks like on a node.</p>
+  </aside>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-who="Carlos" aria-label="Slide 5 of 20">
+  <h2>Give every agent its own kernel</h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 500" role="img" aria-label="Inside an EKS node, kubelet and containerd see an ordinary pod. Pods with a runtimeClassName of isolated-sandbox each run inside their own Nitro sandbox with its own kernel; regular pods keep sharing the node kernel.">
+      <defs><marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <rect x="30" y="30" width="1140" height="440" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+      <text x="55" y="68" fill="#a7b3bf" font-size="25">EKS node (EC2 instance)</text>
+      <rect x="55" y="100" width="230" height="320" rx="12" fill="#0f1419" stroke="#2a3542"/>
+      <text x="170" y="150" text-anchor="middle" fill="#e8edf2" font-size="25" font-weight="700">kubelet</text>
+      <text x="170" y="200" text-anchor="middle" fill="#e8edf2" font-size="25" font-weight="700">containerd</text>
+      <text x="170" y="260" text-anchor="middle" fill="#a7b3bf" font-size="21">scheduling, volumes,</text>
+      <text x="170" y="286" text-anchor="middle" fill="#a7b3bf" font-size="21">VPC IP, exec, logs,</text>
+      <text x="170" y="312" text-anchor="middle" fill="#a7b3bf" font-size="21">port-forward</text>
+      <text x="170" y="380" text-anchor="middle" fill="#a7b3bf" font-size="21">sees an ordinary pod</text>
+      <path d="M285 180 L330 180" stroke="#a7b3bf" stroke-width="3" marker-end="url(#c)"/>
+      <path d="M285 180 L310 180 L310 330 L330 330" fill="none" stroke="#a7b3bf" stroke-width="3" marker-end="url(#c)"/>
+      <!-- sandbox 1 -->
+      <rect x="340" y="100" width="400" height="200" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <text x="360" y="132" fill="#ff9900" font-size="23" font-weight="700">Nitro sandbox</text>
+      <text x="725" y="132" text-anchor="end" fill="#a7b3bf" font-size="20">this pod only</text>
+      <rect x="360" y="150" width="175" height="56" rx="8" fill="#161d26" stroke="#2a3542"/><text x="447" y="185" text-anchor="middle" fill="#e8edf2" font-size="21">agent container</text>
+      <rect x="545" y="150" width="175" height="56" rx="8" fill="#161d26" stroke="#2a3542"/><text x="632" y="185" text-anchor="middle" fill="#a7b3bf" font-size="21">same image</text>
+      <rect x="360" y="226" width="360" height="50" rx="8" fill="#1a3a2a" stroke="#3ecf8e"/><text x="540" y="258" text-anchor="middle" fill="#3ecf8e" font-size="23" font-weight="700">its own Linux kernel</text>
+      <!-- sandbox 2 -->
+      <rect x="340" y="320" width="400" height="100" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <text x="360" y="352" fill="#ff9900" font-size="23" font-weight="700">Nitro sandbox</text>
+      <text x="725" y="352" text-anchor="end" fill="#a7b3bf" font-size="20">another session</text>
+      <rect x="360" y="368" width="360" height="40" rx="8" fill="#1a3a2a" stroke="#3ecf8e"/><text x="540" y="395" text-anchor="middle" fill="#3ecf8e" font-size="21">its own Linux kernel</text>
+      <!-- regular pods -->
+      <rect x="780" y="100" width="360" height="320" rx="12" fill="#0f1419" stroke="#2a3542" stroke-dasharray="8 6"/>
+      <text x="960" y="135" text-anchor="middle" fill="#a7b3bf" font-size="23">regular pods</text>
+      <rect x="810" y="165" width="140" height="56" rx="8" fill="#161d26" stroke="#2a3542"/><text x="880" y="200" text-anchor="middle" fill="#e8edf2" font-size="21">payments</text>
+      <rect x="970" y="165" width="140" height="56" rx="8" fill="#161d26" stroke="#2a3542"/><text x="1040" y="200" text-anchor="middle" fill="#e8edf2" font-size="21">user data</text>
+      <rect x="810" y="250" width="300" height="50" rx="8" fill="#161d26" stroke="#2a3542"/><text x="960" y="282" text-anchor="middle" fill="#a7b3bf" font-size="21">share the node kernel</text>
+      <text x="960" y="370" text-anchor="middle" fill="#a7b3bf" font-size="19">the sandbox shares no kernel</text>
+      <text x="960" y="396" text-anchor="middle" fill="#a7b3bf" font-size="19">and no memory mapping with them</text>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p>What changes is <b>what sits between the kubelet and your containers</b>.</p>
+    <ul>
+      <li>From the outside it is <b>still a pod</b>: scheduled normally, a VPC IP, volumes through the same CSI drivers, <code>kubectl exec</code>, <code>logs</code> and <code>port-forward</code> all work.</li>
+      <li>Instead of starting the containers on the node kernel, containerd launches a <b>Nitro sandbox</b> for the pod: its own kernel, hardware-isolated CPU and memory, and it <b>belongs to that pod alone</b>.</li>
+      <li>Two agent sessions on one node: two sandboxes, two kernels. The regular pods next to them are untouched.</li>
+    </ul>
+    <p><i>Next:</i> what you type to get this.</p>
+  </aside>
+</section>
+
+<!-- 6 -->
+<section class="slide center" data-who="Carlos" aria-label="Slide 6 of 20">
+  <h2>Kubernetes-native: one line on a normal pod spec</h2>
+  <div class="grid2">
+    <div>
+      <p class="lead">No node selector, toleration or sidecar.</p>
+<pre aria-label="Pod manifest with runtimeClassName isolated-sandbox"><code><span class="k">apiVersion</span>: v1
+<span class="k">kind</span>: Pod
+<span class="k">metadata</span>:
+  <span class="k">name</span>: hello-sandbox
+<span class="k">spec</span>:
+  <span class="c"># the only change:</span>
+  <span class="h">runtimeClassName: isolated-sandbox</span>
+  <span class="k">containers</span>:
+  - <span class="k">name</span>: main
+    <span class="k">image</span>: amazonlinux:2023
+    <span class="k">command</span>: [<span class="s">"sleep"</span>, <span class="s">"infinity"</span>]</code></pre>
+    </div>
+    <div>
+      <p class="lead">Need no network at all? One annotation.</p>
+<pre aria-label="Pod annotation sandbox.amazonaws.com/network-isolated true"><code><span class="k">metadata</span>:
+  <span class="k">annotations</span>:
+    <span class="h">sandbox.amazonaws.com/network-isolated: "true"</span></code></pre>
+      <p class="muted" style="margin-top:1.2rem">The guest boots with <b>loopback only</b>.<br><code>kubectl exec</code> and <code>logs</code> still work.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>This is the whole opt-in. <b>One line.</b></p>
+    <ul>
+      <li>The RuntimeClass carries the scheduling constraints, so there is <b>no node selector, no toleration, no sidecar</b>. On EKS Auto Mode the node comes up on demand.</li>
+      <li>For code that must not talk to anything: <b>one annotation</b>, and the sandbox boots with <b>no network device</b>. Not filtered, absent. You can still exec in and read logs, because that goes over the sandbox's own channel.</li>
+      <li>Two classes: <code>isolated-sandbox</code> protects the node and the other pods from the pod. <code>confidential-sandbox</code> also treats the node as untrusted; Todd covers what that takes.</li>
+    </ul>
+    <p><i>Next:</i> how you know it worked.</p>
+  </aside>
+</section>
+
+<!-- 7 -->
+<section class="slide center" data-who="Carlos" aria-label="Slide 7 of 20">
+  <h2>Prove it from inside the pod</h2>
+  <div class="grid2">
+    <div>
+      <p class="lead muted">Regular pod</p>
+<pre class="terminal" aria-label="Output of a regular pod: product name m8a.xlarge, disks nvme"><span class="p">$ kubectl logs hello-default</span>
+/sys/class/dmi/id/product_name:  <span class="hl">m8a.xlarge</span>
+disks:   dm-0 <span class="hl">nvme0n1 nvme1n1</span> zram0</pre>
+      <p class="caption" style="text-align:left">The EC2 instance it shares with every other pod.</p>
+    </div>
+    <div>
+      <p class="lead accent">Sandboxed pod</p>
+<pre class="terminal" aria-label="Output of the sandboxed pod: product name m8i.enclave, virtio disks, loopback only"><span class="p">$ kubectl logs hello-sandbox</span>
+/sys/class/dmi/id/product_name:  <span class="hl">m8i.enclave</span>
+disks:   dm-0 <span class="hl">vda vdb vdc</span>
+
+<span class="p">$ kubectl logs hello-network-isolated</span>
+ipv4:    <span class="hl">127.0.0.1</span>
+route:   <span class="hl">none</span></pre>
+      <p class="caption" style="text-align:left">Its own machine, virtio disks, and no way out. Ready in about 5 s.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Same image, same command, <b>one line different</b>. The pod's own logs are the evidence.</p>
+    <ul>
+      <li>The regular pod reports the <b>EC2 instance</b> and its NVMe disks: it shares that machine with everything else on the node.</li>
+      <li>The sandboxed pod reports <b>its own VM</b>, <code>m8i.enclave</code>, and <b>virtio</b> block devices. Different kernel, different boot, different hardware view.</li>
+      <li>With the annotation: only loopback has an address and there is <b>no route</b>. There is no network device to misconfigure.</li>
+      <li>After the first node exists, a new sandboxed pod is Ready in about <b>5 to 6 seconds</b>, most of it the guest booting.</li>
+    </ul>
+    <p><i>Next:</i> doing this at the scale of sessions, with agent-sandbox.</p>
+  </aside>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-who="Carlos" aria-label="Slide 8 of 20">
+  <h2>agent-sandbox: pods as sessions <span class="tag">kubernetes-sigs</span></h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 480" role="img" aria-label="A SandboxTemplate carrying runtimeClassName isolated-sandbox feeds a SandboxWarmPool of pre-booted sandboxes. A SandboxClaim adopts one warm pod in under one second and the pool refills. A Sandbox resource gives one stateful pod with a persistent volume that can be suspended and resumed.">
+      <defs><marker id="d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <rect x="30" y="60" width="300" height="200" rx="14" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
+      <text x="180" y="100" text-anchor="middle" fill="#4aa3ff" font-size="28" font-weight="700">SandboxTemplate</text>
+      <rect x="55" y="125" width="250" height="110" rx="10" fill="#0b1016" stroke="#2a3542"/>
+      <text x="70" y="158" fill="#a7b3bf" font-size="21" font-family="Menlo, monospace">podTemplate.spec:</text>
+      <text x="70" y="188" fill="#ff9900" font-size="21" font-family="Menlo, monospace">  runtimeClassName:</text>
+      <text x="70" y="214" fill="#ff9900" font-size="21" font-family="Menlo, monospace">    isolated-sandbox</text>
+      <path d="M330 160 L400 160" stroke="#a7b3bf" stroke-width="3" marker-end="url(#d)"/>
+      <rect x="410" y="40" width="400" height="240" rx="14" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+      <text x="610" y="80" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">SandboxWarmPool</text>
+      <text x="610" y="108" text-anchor="middle" fill="#a7b3bf" font-size="21">pre-booted, refills itself</text>
+      <g>
+        <rect x="440" y="130" width="100" height="120" rx="10" fill="#0f1419" stroke="#ff9900" stroke-width="3"/><text x="490" y="195" text-anchor="middle" fill="#3ecf8e" font-size="21">warm</text>
+        <rect x="560" y="130" width="100" height="120" rx="10" fill="#0f1419" stroke="#ff9900" stroke-width="3"/><text x="610" y="195" text-anchor="middle" fill="#3ecf8e" font-size="21">warm</text>
+        <rect x="680" y="130" width="100" height="120" rx="10" fill="#0f1419" stroke="#ff9900" stroke-width="3"/><text x="730" y="195" text-anchor="middle" fill="#3ecf8e" font-size="21">warm</text>
+      </g>
+      <path d="M810 160 L880 160" stroke="#a7b3bf" stroke-width="3" marker-end="url(#d)"/>
+      <rect x="890" y="60" width="280" height="200" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
+      <text x="1030" y="100" text-anchor="middle" fill="#3ecf8e" font-size="28" font-weight="700">SandboxClaim</text>
+      <text x="1030" y="135" text-anchor="middle" fill="#a7b3bf" font-size="21">one per session or task</text>
+      <text x="1030" y="185" text-anchor="middle" fill="#e8edf2" font-size="25">adopts a warm pod</text>
+      <text x="1030" y="225" text-anchor="middle" fill="#ff9900" font-size="30" font-weight="700">Ready in &lt; 1 s</text>
+      <rect x="30" y="310" width="1140" height="140" rx="14" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+      <text x="60" y="350" fill="#e8edf2" font-size="28" font-weight="700">Sandbox</text>
+      <text x="60" y="385" fill="#a7b3bf" font-size="22">one stateful pod with a stable identity and a persistent volume</text>
+      <text x="60" y="418" fill="#a7b3bf" font-size="22">operatingMode: Suspended frees the compute and keeps the volume; Running brings the workspace back</text>
+      <text x="1140" y="350" text-anchor="end" fill="#a7b3bf" font-size="21">agents.x-k8s.io</text>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p><b>agent-sandbox</b> is the Kubernetes SIG project for exactly this shape: a pod per session. A Nitro sandbox is a RuntimeClass on a pod template, so it works with it <b>unchanged</b>.</p>
+    <ul>
+      <li>Put <code>runtimeClassName</code> in the <b>SandboxTemplate</b>.</li>
+      <li>A <b>SandboxWarmPool</b> keeps pods booted. A <b>SandboxClaim</b> per session adopts one: in our runs, Ready in <b>0.8 seconds</b>, about what an ordinary pod takes. The pool refills in the background, off the path the user waits on.</li>
+      <li>A <b>Sandbox</b> is the stateful shape: a stable identity and a volume. Suspend it when idle, pay nothing for compute, resume with the workspace intact.</li>
+    </ul>
+    <p>Size the pool to your <b>peak claim rate</b>, not to the number of sessions.</p>
+    <p><i>Next:</i> what the agent can reach from inside.</p>
+  </aside>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-who="Carlos" aria-label="Slide 9 of 20">
+  <h2>Scoped egress, scoped credentials</h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 480" role="img" aria-label="Inside the node, the sandbox's network interface connects to a host-side interface where eBPF network policy is enforced outside the guest; only allowed hosts are reachable. Credentials come from EKS Pod Identity: the pod's ServiceAccount maps to one IAM role scoped to what the agent needs, with no long-lived keys inside the guest.">
+      <defs><marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <rect x="30" y="30" width="760" height="420" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+      <text x="55" y="68" fill="#a7b3bf" font-size="25">EKS node</text>
+      <rect x="55" y="100" width="300" height="320" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <text x="205" y="135" text-anchor="middle" fill="#ff9900" font-size="23" font-weight="700">Nitro sandbox</text>
+      <rect x="80" y="160" width="250" height="60" rx="8" fill="#161d26" stroke="#2a3542"/><text x="205" y="197" text-anchor="middle" fill="#e8edf2" font-size="22">agent code</text>
+      <rect x="80" y="240" width="250" height="50" rx="8" fill="#161d26" stroke="#2a3542"/><text x="205" y="272" text-anchor="middle" fill="#a7b3bf" font-size="21">eth0, VPC address</text>
+      <text x="205" y="340" text-anchor="middle" fill="#a7b3bf" font-size="20">cannot see or change</text>
+      <text x="205" y="364" text-anchor="middle" fill="#a7b3bf" font-size="20">anything to the right</text>
+      <path d="M355 265 L440 265" stroke="#a7b3bf" stroke-width="3" marker-end="url(#e)"/>
+      <rect x="450" y="200" width="310" height="130" rx="12" fill="#1a2a3a" stroke="#4aa3ff" stroke-width="2"/>
+      <text x="605" y="235" text-anchor="middle" fill="#4aa3ff" font-size="23" font-weight="700">host-side interface</text>
+      <text x="605" y="268" text-anchor="middle" fill="#e8edf2" font-size="22">eBPF network policy</text>
+      <text x="605" y="298" text-anchor="middle" fill="#a7b3bf" font-size="18">enforced outside the guest</text>
+      <rect x="450" y="350" width="310" height="70" rx="12" fill="#0f1419" stroke="#2a3542"/>
+      <text x="605" y="380" text-anchor="middle" fill="#e8edf2" font-size="22">Pod Identity agent</text>
+      <text x="605" y="405" text-anchor="middle" fill="#a7b3bf" font-size="18">short-lived credentials</text>
+      <path d="M760 265 L850 265" stroke="#a7b3bf" stroke-width="3" marker-end="url(#e)"/>
+      <rect x="860" y="60" width="310" height="180" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
+      <text x="1015" y="100" text-anchor="middle" fill="#3ecf8e" font-size="25" font-weight="700">allowed hosts only</text>
+      <text x="1015" y="140" text-anchor="middle" fill="#a7b3bf" font-size="21">model endpoint, git host,</text>
+      <text x="1015" y="168" text-anchor="middle" fill="#a7b3bf" font-size="21">CoreDNS, Pod Identity</text>
+      <text x="1015" y="210" text-anchor="middle" fill="#a7b3bf" font-size="18">by hostname with domainNames</text>
+      <rect x="860" y="270" width="310" height="180" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
+      <text x="1015" y="310" text-anchor="middle" fill="#3ecf8e" font-size="25" font-weight="700">one IAM role per agent</text>
+      <text x="1015" y="350" text-anchor="middle" fill="#a7b3bf" font-size="20">via EKS Pod Identity</text>
+      <text x="1015" y="380" text-anchor="middle" fill="#a7b3bf" font-size="21">scoped to its job</text>
+      <text x="1015" y="420" text-anchor="middle" fill="#a7b3bf" font-size="20">no long-lived keys in the guest</text>
+      <path d="M760 385 L850 385" stroke="#a7b3bf" stroke-width="3" marker-end="url(#e)"/>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p>The kernel boundary says <b>what the agent cannot touch</b>. These two say <b>what it can reach</b>.</p>
+    <ul>
+      <li><b>Egress</b>: a standard NetworkPolicy. It is enforced by eBPF on the <b>host side</b> of the pod's interface, which the guest has no access to, so nothing inside the sandbox can reconfigure it, whatever UID it runs as. On Auto Mode you can allow by <b>hostname</b>.</li>
+      <li><b>Credentials</b>: EKS Pod Identity. The pod's ServiceAccount maps to <b>one IAM role</b>, scoped to the agent's job. Short-lived, served from the node, no keys baked into the image.</li>
+      <li>And when the task needs neither, the <b>network-isolated</b> annotation removes the device altogether.</li>
+    </ul>
+    <p><i>Next:</i> let's run one.</p>
+  </aside>
+</section>
+
+<!-- 10 -->
+<section class="slide center" data-who="Carlos + Todd" aria-label="Slide 10 of 20: Demo">
+  <h2>Demo <span class="tag">live</span></h2>
+  <div class="grid2">
+    <div class="card watch">
+      <h3>What to watch</h3>
+      <ol>
+        <li>A coding agent gets a GitHub issue to fix</li>
+        <li>It claims a <b>warm sandbox</b>: Ready in under 1 s</li>
+        <li>Inside: its own kernel, <code>m8i.enclave</code>, virtio disks</li>
+        <li>Allowed hosts answer, everything else is refused</li>
+        <li>The pull request opens; the pool refills</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Everything on this stage</h3>
+      <p><span class="pill">EKS Auto Mode</span><span class="pill">isolated-sandbox</span><span class="pill">agent-sandbox</span><span class="pill">NetworkPolicy</span><span class="pill">Pod Identity</span><span class="pill">Amazon Bedrock</span></p>
+      <p class="muted">Same manifests as the blueprints.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p><b>Carlos drives, Todd narrates</b> the internals as they appear.</p>
+    <ul>
+      <li>Create the claim, show <code>kubectl get sandboxclaim</code> flip to Ready and the <b>time it took</b>.</li>
+      <li>Exec in: <code>cat /sys/class/dmi/id/product_name</code>, <code>ls /sys/block</code>, <code>uname -r</code>.</li>
+      <li>Show an allowed request succeed and a blocked one fail.</li>
+      <li>Let the agent finish and show the PR. Delete the claim, watch the pool refill.</li>
+    </ul>
+    <p>If the venue network fails: the recorded run is on the laptop, same commands, same output.</p>
+    <p><i>Next:</i> Todd, how this is built.</p>
+  </aside>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-who="Todd" aria-label="Slide 11 of 20">
+  <h2>What sits under a RuntimeClass</h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 500" role="img" aria-label="Left to right: a pod spec with runtimeClassName goes to kubelet, over CRI to containerd, which picks the handler's shim v2 binary; the shim starts a VMM such as Firecracker; inside the microVM a guest kernel, a guest agent and a guest containerd run the pod's containers. Each box is labelled with the open source project that provides it.">
+      <defs><marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <g>
+        <rect x="30" y="150" width="180" height="150" rx="12" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+        <text x="120" y="195" text-anchor="middle" fill="#e8edf2" font-size="24" font-weight="700">Pod spec</text>
+        <text x="120" y="235" text-anchor="middle" fill="#ff9900" font-size="17" font-family="Menlo, monospace">runtimeClassName</text>
+        <text x="120" y="280" text-anchor="middle" fill="#a7b3bf" font-size="18">Kubernetes</text>
+      </g>
+      <path d="M210 225 L245 225" stroke="#a7b3bf" stroke-width="3" marker-end="url(#f)"/>
+      <g>
+        <rect x="255" y="150" width="160" height="150" rx="12" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+        <text x="335" y="195" text-anchor="middle" fill="#e8edf2" font-size="24" font-weight="700">kubelet</text>
+        <text x="335" y="235" text-anchor="middle" fill="#a7b3bf" font-size="18">resolves the class</text>
+        <text x="335" y="258" text-anchor="middle" fill="#a7b3bf" font-size="18">to a handler</text>
+        <text x="335" y="285" text-anchor="middle" fill="#a7b3bf" font-size="18">CRI</text>
+      </g>
+      <path d="M415 225 L450 225" stroke="#a7b3bf" stroke-width="3" marker-end="url(#f)"/>
+      <g>
+        <rect x="460" y="150" width="180" height="150" rx="12" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+        <text x="550" y="195" text-anchor="middle" fill="#e8edf2" font-size="24" font-weight="700">containerd</text>
+        <text x="550" y="235" text-anchor="middle" fill="#a7b3bf" font-size="20">handler to</text>
+        <text x="550" y="258" text-anchor="middle" fill="#ff9900" font-size="20">shim v2 binary</text>
+        <text x="550" y="285" text-anchor="middle" fill="#a7b3bf" font-size="18">CNCF</text>
+      </g>
+      <path d="M640 225 L675 225" stroke="#a7b3bf" stroke-width="3" marker-end="url(#f)"/>
+      <g>
+        <rect x="685" y="150" width="150" height="150" rx="12" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
+        <text x="760" y="195" text-anchor="middle" fill="#4aa3ff" font-size="24" font-weight="700">VMM</text>
+        <text x="760" y="235" text-anchor="middle" fill="#a7b3bf" font-size="17">boots a microVM</text>
+        <text x="760" y="258" text-anchor="middle" fill="#a7b3bf" font-size="17">per pod</text>
+        <text x="760" y="285" text-anchor="middle" fill="#a7b3bf" font-size="18">e.g. Firecracker</text>
+      </g>
+      <path d="M835 225 L870 225" stroke="#a7b3bf" stroke-width="3" marker-end="url(#f)"/>
+      <!-- guest -->
+      <rect x="880" y="40" width="290" height="420" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <text x="1025" y="78" text-anchor="middle" fill="#ff9900" font-size="24" font-weight="700">microVM</text>
+      <rect x="905" y="100" width="240" height="60" rx="8" fill="#161d26" stroke="#2a3542"/><text x="1025" y="128" text-anchor="middle" fill="#e8edf2" font-size="21">pod containers</text><text x="1025" y="150" text-anchor="middle" fill="#a7b3bf" font-size="17">OCI images, unchanged</text>
+      <rect x="905" y="175" width="240" height="60" rx="8" fill="#161d26" stroke="#2a3542"/><text x="1025" y="203" text-anchor="middle" fill="#e8edf2" font-size="21">guest containerd</text><text x="1025" y="225" text-anchor="middle" fill="#a7b3bf" font-size="17">runs them</text>
+      <rect x="905" y="250" width="240" height="60" rx="8" fill="#2b1b0e" stroke="#ff9900"/><text x="1025" y="278" text-anchor="middle" fill="#ff9900" font-size="21">guest agent</text><text x="1025" y="300" text-anchor="middle" fill="#a7b3bf" font-size="16">takes requests from the shim</text>
+      <rect x="905" y="325" width="240" height="60" rx="8" fill="#1a3a2a" stroke="#3ecf8e"/><text x="1025" y="353" text-anchor="middle" fill="#3ecf8e" font-size="21">guest kernel</text><text x="1025" y="375" text-anchor="middle" fill="#a7b3bf" font-size="17">Linux, this pod only</text>
+      <rect x="905" y="400" width="240" height="40" rx="8" fill="#161d26" stroke="#2a3542"/><text x="1025" y="427" text-anchor="middle" fill="#a7b3bf" font-size="18">virtio: block, net, vsock</text>
+      <text x="432" y="390" text-anchor="middle" fill="#a7b3bf" font-size="23">Kubernetes never learns the difference:</text>
+      <text x="432" y="420" text-anchor="middle" fill="#a7b3bf" font-size="23">the handler is the only new word.</text>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p><b>Todd.</b> Every piece on this slide is open source, and the shape is the same whichever VMM you pick.</p>
+    <ul>
+      <li>kubelet resolves the <b>RuntimeClass</b> to a <b>handler</b> name and passes it over CRI.</li>
+      <li>containerd maps the handler to a <b>shim v2</b> binary. The shim is the whole extension point: it owns the pod sandbox lifecycle and talks to the guest.</li>
+      <li>The shim starts a <b>VMM</b>, one microVM per pod. Inside: a guest kernel, a small <b>agent</b> that receives lifecycle requests from the shim, and a guest containerd that runs the containers.</li>
+      <li>Images are unchanged. Devices are virtio. Kubernetes sees a pod.</li>
+    </ul>
+    <p><i>Next:</i> the two files that wire it up.</p>
+  </aside>
+</section>
+
+<!-- 12 -->
+<section class="slide center" data-who="Todd" aria-label="Slide 12 of 20">
+  <h2>Wiring a RuntimeClass to a shim</h2>
+  <div class="grid2 wide-left">
+    <div>
+      <p class="lead">containerd: a handler and its shim</p>
+<pre aria-label="containerd config.toml defining a runtime handler named microvm"><code><span class="c"># /etc/containerd/config.toml</span>
+[plugins.<span class="s">'io.containerd.cri.v1.runtime'</span>.containerd.runtimes.<span class="h">microvm</span>]
+  <span class="k">runtime_type</span> = <span class="s">"io.containerd.microvm.v2"</span>
+  <span class="c"># -> binary containerd-shim-microvm-v2 on PATH</span>
+  <span class="k">pod_annotations</span> = [<span class="s">"sandbox.example.com/*"</span>]
+  <span class="c"># annotations the shim may read</span></code></pre>
+    </div>
+    <div>
+      <p class="lead">Kubernetes: the class pods name</p>
+<pre aria-label="RuntimeClass manifest with handler microvm, overhead and scheduling"><code><span class="k">apiVersion</span>: node.k8s.io/v1
+<span class="k">kind</span>: RuntimeClass
+<span class="k">metadata</span>:
+  <span class="k">name</span>: <span class="h">isolated-sandbox</span>
+<span class="k">handler</span>: <span class="h">microvm</span>
+<span class="k">overhead</span>:
+  <span class="k">podFixed</span>: { <span class="k">memory</span>: <span class="s">"160Mi"</span>, <span class="k">cpu</span>: <span class="s">"250m"</span> }
+<span class="k">scheduling</span>:
+  <span class="k">nodeSelector</span>:
+    <span class="k">sandbox.example.com/capable</span>: <span class="s">"true"</span></code></pre>
+      <p class="muted" style="margin-top:1rem">The class carries scheduling and overhead,<br>so the pod spec stays at one line.</p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Two files. Left is the node, right is the cluster.</p>
+    <ul>
+      <li>In containerd, a runtime entry named <code>microvm</code> with a <code>runtime_type</code>. containerd turns <code>io.containerd.microvm.v2</code> into a binary name, <code>containerd-shim-microvm-v2</code>, and starts it. <code>pod_annotations</code> is the allowlist of annotations the shim is handed, which is how <b>network-isolated</b> reaches the runtime.</li>
+      <li>In Kubernetes, a <b>RuntimeClass</b> whose <code>handler</code> is that name. It also carries the <b>pod overhead</b> the guest costs and a <b>nodeSelector</b> for capable nodes, which is why the pod needs no selector of its own.</li>
+      <li>Values here are illustrative; the shape is what matters.</li>
+    </ul>
+    <p><i>Next:</i> the VMM.</p>
+  </aside>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-who="Todd" aria-label="Slide 13 of 20">
+  <h2>Firecracker: a VMM built for one job <span class="tag">firecracker-microvm</span></h2>
+  <div class="grid3" style="flex:1;align-content:center">
+    <div class="card">
+      <h3>Small by design</h3>
+      <p>Open source VMM on KVM</p>
+      <p>virtio block, net, vsock. No BIOS, no PCI.</p>
+    </div>
+    <div class="card">
+      <h3>Fast and dense</h3>
+      <p>Boots in about <b>125 ms</b></p>
+      <p>Under <b>5 MiB</b> overhead per microVM</p>
+    </div>
+    <div class="card">
+      <h3>Defense in depth</h3>
+      <p><code>jailer</code>: chroot, cgroups, seccomp</p>
+      <p>Runs AWS Lambda and Fargate</p>
+    </div>
+  </div>
+  <p class="caption">A microVM per pod is only as cheap as the VMM under it.</p>
+  <aside class="notes">
+    <p>Why a purpose-built VMM instead of a general one.</p>
+    <ul>
+      <li>Firecracker exposes <b>only what a container guest needs</b>: virtio block, net and vsock. A smaller device model is a smaller attack surface for the guest to push on.</li>
+      <li>It is <b>fast</b>, about 125 ms to boot, and <b>cheap</b>, a few MiB per microVM, so one per pod is a normal number, not a luxury.</li>
+      <li>The <code>jailer</code> wraps the VMM process itself in chroot, cgroups and seccomp. Even the thing holding the VM is confined.</li>
+      <li>It has been running Lambda and Fargate for years. This is not a lab component.</li>
+    </ul>
+    <p><i>Next:</i> what a kernel boundary does <b>not</b> decide.</p>
+  </aside>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-who="Todd" aria-label="Slide 14 of 20">
+  <h2>The gap: the node still tells the guest what to run</h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 460" role="img" aria-label="The node sends requests into the microVM: create container with an image, args and mounts; exec; read logs. The guest agent receives them. A question asks who decides whether to obey when the node itself is untrusted.">
+      <defs><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <rect x="30" y="60" width="330" height="340" rx="14" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+      <text x="195" y="100" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">Node</text>
+      <text x="195" y="130" text-anchor="middle" fill="#a7b3bf" font-size="21">kubelet, containerd, shim</text>
+      <text x="195" y="185" text-anchor="middle" fill="#a7b3bf" font-size="21">operated by the cluster admin,</text>
+      <text x="195" y="213" text-anchor="middle" fill="#a7b3bf" font-size="21">or by whoever compromised it</text>
+      <rect x="45" y="260" width="300" height="115" rx="10" fill="#3a1a1a" stroke="#ff6b6b" stroke-width="2"/>
+      <text x="195" y="298" text-anchor="middle" fill="#ff6b6b" font-size="21" font-weight="700">can swap the image,</text>
+      <text x="195" y="327" text-anchor="middle" fill="#ff6b6b" font-size="21" font-weight="700">add a mount, exec a shell</text>
+      <text x="195" y="358" text-anchor="middle" fill="#a7b3bf" font-size="16">the VM boundary stops none of this</text>
+      <g fill="#e8edf2" font-size="20" font-family="Menlo, monospace">
+        <path d="M360 150 L750 150" stroke="#a7b3bf" stroke-width="3" marker-end="url(#g)"/><text x="555" y="138" text-anchor="middle">CreateContainer(image, args, mounts)</text>
+        <path d="M360 230 L750 230" stroke="#a7b3bf" stroke-width="3" marker-end="url(#g)"/><text x="555" y="218" text-anchor="middle">Exec(container, "sh")</text>
+        <path d="M360 310 L750 310" stroke="#a7b3bf" stroke-width="3" marker-end="url(#g)"/><text x="555" y="298" text-anchor="middle">ReadLogs, Stats, ListProcesses</text>
+      </g>
+      <rect x="760" y="60" width="410" height="340" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <text x="965" y="100" text-anchor="middle" fill="#ff9900" font-size="28" font-weight="700">microVM</text>
+      <rect x="790" y="130" width="350" height="90" rx="10" fill="#2b1b0e" stroke="#ff9900"/>
+      <text x="965" y="168" text-anchor="middle" fill="#ff9900" font-size="24" font-weight="700">guest agent</text>
+      <text x="965" y="200" text-anchor="middle" fill="#a7b3bf" font-size="21">receives every request</text>
+      <rect x="790" y="240" width="350" height="60" rx="10" fill="#161d26" stroke="#2a3542"/><text x="965" y="278" text-anchor="middle" fill="#e8edf2" font-size="22">your containers and your data</text>
+      <text x="965" y="355" text-anchor="middle" fill="#e8edf2" font-size="25" font-weight="700">who decides whether to obey?</text>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p>A kernel of its own protects the node from the pod. It says <b>nothing</b> about the other direction.</p>
+    <ul>
+      <li>Every request that shapes the workload <b>comes from the node</b>: which image, which args, which mounts, whether to exec a shell into it.</li>
+      <li>In isolated mode that is fine: the node is trusted. In a <b>confidential</b> setting, where the node operator or a compromised node is the adversary, the guest agent cannot just obey.</li>
+      <li>So the guest needs a <b>policy</b> that says what the workload owner intended, and a way to <b>prove to the outside</b> which policy it is running.</li>
+    </ul>
+    <p><i>Next:</i> the policy language.</p>
+  </aside>
+</section>
+
+<!-- 15 -->
+<section class="slide center" data-who="Todd" aria-label="Slide 15 of 20">
+  <h2>Cedar: the policy the guest enforces <span class="tag">CNCF Sandbox</span></h2>
+  <div class="grid2">
+    <div>
+<pre aria-label="Cedar policy permitting CreateContainer for container main only when the image digest and signer match"><code><span class="k">permit</span>(
+  principal,
+  action == Agent::Action::<span class="s">"CreateContainer"</span>,
+  resource == Workload::Container::<span class="s">"main"</span>
+)
+<span class="k">when</span> {
+  context.image_ref ==
+    <span class="s">"public.ecr.aws/myapp@sha256:abc123..."</span> &amp;&amp;
+  context.image_signers.contains(
+    <span class="s">"arn:aws:signer:...:my-team"</span>)
+};
+
+<span class="c">// nothing else is permitted: default deny</span></code></pre>
+      <p class="muted" style="margin-top:1rem">Generated by <code>genpolicy</code> from the manifest. Evaluated inside the guest.</p>
+    </div>
+    <div class="card">
+      <h3>Why Cedar</h3>
+      <ul>
+        <li>Open source, Rust, CNCF Sandbox</li>
+        <li><b>Default deny</b>; <code>forbid</code> beats <code>permit</code></li>
+        <li><b>Analyzable</b>: ask what a policy allows</li>
+        <li>Fast enough for the request path</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    <p><b>Cedar</b> is an open source authorization language from AWS, now a CNCF Sandbox project.</p>
+    <ul>
+      <li>This policy says: container <code>main</code> may be created <b>only</b> with this exact image digest, <b>and only</b> if the image carries a signature from this signing profile. Nothing else is permitted, because Cedar is <b>default deny</b>.</li>
+      <li>You do not write it by hand. <code>genpolicy</code> reads the manifest, resolves the tag to a digest, and emits the policy. It goes on the pod as an annotation and the guest agent evaluates it on <b>every</b> request: create, exec, logs, mounts.</li>
+      <li>It is <b>analyzable</b>: the language is designed so tools can answer "what does this policy allow" rather than just "did this request pass".</li>
+    </ul>
+    <p><i>Next:</i> two trust models on one mechanism.</p>
+  </aside>
+</section>
+
+<!-- 16 -->
+<section class="slide center" data-who="Todd" aria-label="Slide 16 of 20">
+  <h2>Two trust models, one mechanism</h2>
+  <table>
+    <thead><tr><th scope="col"></th><th scope="col">isolated-sandbox</th><th scope="col">confidential-sandbox</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Node is</th><td>trusted</td><td><b class="accent">untrusted</b></td></tr>
+      <tr><th scope="row">Policy</th><td>optional, permissive</td><td>required, <b>default deny</b></td></tr>
+      <tr><th scope="row">Admission</th><td>any valid spec</td><td>image digest, args, env, mounts <b>pinned</b></td></tr>
+      <tr><th scope="row">Exec, stdin</th><td>allowed</td><td>denied</td></tr>
+      <tr><th scope="row">Writable layer</th><td>plain</td><td>encrypted in the guest</td></tr>
+      <tr><th scope="row">Secrets</th><td>Pod Identity</td><td>only to an <b>attested</b> guest</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>Same shim, same VMM, same guest agent, same policy engine. <b>Only the policy changes.</b></p>
+    <ul>
+      <li><b>Isolated</b>: the node is trusted. Policy is optional and permissive; exec and stats work as you expect; admission accepts any spec. This is what the agent demo used.</li>
+      <li><b>Confidential</b>: the node is the adversary. The policy <b>pins every admission field</b> to a digest and a value, <b>denies exec and stdin</b> so the node cannot look in, encrypts the writable layer inside the guest, and secrets are released only to a guest that can <b>prove</b> what it runs.</li>
+      <li>That last row is the piece a policy alone cannot provide.</li>
+    </ul>
+    <p><i>Next:</i> closing the loop with attestation.</p>
+  </aside>
+</section>
+
+<!-- 17 -->
+<section class="slide" data-who="Todd" aria-label="Slide 17 of 20">
+  <h2>Closing the loop: a measured policy and an outside verifier</h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 470" role="img" aria-label="Six numbered steps. One: the workload owner runs genpolicy on the manifest. Two: the policy goes on the pod as an annotation. Three: the guest agent enforces it and measures it into PCR17. Four: the guest requests an attestation document from the Nitro Secure Module. Five: KMS checks the key policy condition on PCR17 and PCR8 ServiceName. Six: only on a match is the key released, so encrypted image layers and secrets open inside the guest.">
+      <defs><marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <g>
+        <rect x="30" y="40" width="250" height="120" rx="12" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
+        <circle cx="55" cy="65" r="16" fill="#4aa3ff"/><text x="55" y="71" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">1</text>
+        <text x="155" y="95" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">workload owner</text>
+        <text x="155" y="125" text-anchor="middle" fill="#a7b3bf" font-size="20">genpolicy manifest.yaml</text>
+        <text x="155" y="148" text-anchor="middle" fill="#a7b3bf" font-size="17">prints the predicted PCR17</text>
+      </g>
+      <path d="M280 100 L320 100" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)"/>
+      <g>
+        <rect x="330" y="40" width="250" height="120" rx="12" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
+        <circle cx="355" cy="65" r="16" fill="#a7b3bf"/><text x="355" y="71" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">2</text>
+        <text x="455" y="95" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">pod annotation</text>
+        <text x="455" y="125" text-anchor="middle" fill="#a7b3bf" font-size="20">signed policy envelope</text>
+        <text x="455" y="148" text-anchor="middle" fill="#a7b3bf" font-size="17">delivered by the node</text>
+      </g>
+      <path d="M580 100 L620 100" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)"/>
+      <rect x="630" y="30" width="540" height="410" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <text x="900" y="62" text-anchor="middle" fill="#ff9900" font-size="23" font-weight="700">confidential sandbox</text>
+      <g>
+        <rect x="660" y="80" width="480" height="90" rx="10" fill="#2b1b0e" stroke="#ff9900"/>
+        <circle cx="685" cy="105" r="16" fill="#ff9900"/><text x="685" y="111" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">3</text>
+        <text x="915" y="112" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">guest agent enforces the policy</text>
+        <text x="915" y="145" text-anchor="middle" fill="#a7b3bf" font-size="20">and measures it into PCR17</text>
+      </g>
+      <path d="M900 170 L900 200" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)"/>
+      <g>
+        <rect x="660" y="210" width="480" height="80" rx="10" fill="#161d26" stroke="#2a3542"/>
+        <circle cx="685" cy="235" r="16" fill="#a7b3bf"/><text x="685" y="241" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">4</text>
+        <text x="915" y="242" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">Nitro Secure Module</text>
+        <text x="915" y="272" text-anchor="middle" fill="#a7b3bf" font-size="20">signs an attestation document with the PCRs</text>
+      </g>
+      <path d="M900 290 L900 320" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)"/>
+      <g>
+        <rect x="660" y="330" width="480" height="90" rx="10" fill="#1a3a2a" stroke="#3ecf8e"/>
+        <circle cx="685" cy="355" r="16" fill="#3ecf8e"/><text x="685" y="361" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">6</text>
+        <text x="915" y="362" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">key released only on a match</text>
+        <text x="915" y="395" text-anchor="middle" fill="#a7b3bf" font-size="20">encrypted layers open inside the guest</text>
+      </g>
+      <g>
+        <rect x="30" y="230" width="550" height="200" rx="12" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
+        <circle cx="55" cy="255" r="16" fill="#3ecf8e"/><text x="55" y="261" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">5</text>
+        <text x="305" y="262" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">outside verifier: KMS key policy</text>
+        <g fill="#e8edf2" font-size="17" font-family="Menlo, monospace">
+          <text x="60" y="292">"Condition": { "StringEqualsIgnoreCase": {</text>
+          <text x="60" y="316" fill="#ff9900">  "kms:RecipientAttestation:PCR17": "&lt;PCR17&gt;",</text>
+          <text x="60" y="340" fill="#ff9900">  "kms:RecipientAttestation:PCR8:ServiceName":</text>
+          <text x="60" y="364" fill="#ff9900">      "eks.amazonaws.com"</text>
+          <text x="60" y="388">}}</text>
+        </g>
+        <text x="305" y="418" text-anchor="middle" fill="#a7b3bf" font-size="17">a changed policy changes PCR17: Decrypt refused</text>
+      </g>
+      <path d="M580 330 L650 300" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)" fill="none"/>
+    </svg>
+  </div>
+  <aside class="notes">
+    <p>Measurement alone enforces nothing. The guest will run <b>whatever policy the node hands it</b>; it just records which one. The loop closes <b>outside</b>.</p>
+    <ul>
+      <li><b>1, 2</b>: the owner generates the policy; the tool also prints the <b>PCR17 the sandbox will measure it into</b>, before anything runs.</li>
+      <li><b>3, 4</b>: inside, the agent enforces it and measures it. The <b>Nitro Secure Module</b> signs an attestation document carrying the PCRs.</li>
+      <li><b>5, 6</b>: the KMS key policy requires that exact PCR17 and the EKS service name on PCR8. A substituted policy means a different PCR17, so <code>kms:Decrypt</code> fails and the encrypted layers never open. Only the intended policy gets the key.</li>
+    </ul>
+    <p>Any verifier that checks the attestation document works here. KMS is the one you already have.</p>
+    <p><i>Next:</i> how all of this maps onto the reference implementation.</p>
+  </aside>
+</section>
+
+<!-- 18 -->
+<section class="slide center" data-who="Todd" aria-label="Slide 18 of 20">
+  <h2>Reference implementation: Nitro sandboxes on Amazon EKS</h2>
+  <table>
+    <thead><tr><th scope="col">Layer</th><th scope="col">Open source component</th><th scope="col">In a Nitro sandbox</th></tr></thead>
+    <tbody>
+      <tr><td>Opt-in</td><td>Kubernetes <code>RuntimeClass</code></td><td><code>isolated-sandbox</code>, <code>confidential-sandbox</code></td></tr>
+      <tr><td>Node runtime</td><td>containerd, shim v2</td><td>one sandbox per pod</td></tr>
+      <tr><td>Boundary</td><td>Linux guest kernel, virtio</td><td>first-level guest of the <b>Nitro hypervisor</b></td></tr>
+      <tr><td>In the guest</td><td>containerd, OCI images</td><td>an agent that enforces the policy</td></tr>
+      <tr><td>Policy</td><td><b>Cedar</b></td><td><code>genpolicy</code>, measured into PCR17</td></tr>
+      <tr><td>Image trust</td><td>OCI encryption, Notation</td><td>verified <b>inside</b> the guest, keys from KMS</td></tr>
+      <tr><td>Attestation</td><td>Nitro Enclaves document format</td><td>NSM and KMS key policy conditions</td></tr>
+      <tr><td>Sessions</td><td><b>agent-sandbox</b></td><td>unchanged</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>This is the shape we just walked through, as it ships on EKS.</p>
+    <ul>
+      <li>The <b>interfaces are the open ones</b>: RuntimeClass, containerd and shim v2, OCI images, the OCI encryption spec, Notation signatures, Cedar.</li>
+      <li>The boundary is where the reference implementation differs from a software VMM on a node: the sandbox is a <b>first-level guest of the Nitro hypervisor</b>, the same hypervisor under every EC2 instance, so isolation between sandboxes is enforced in hardware with no nested virtualization.</li>
+      <li>Policy and image trust are evaluated <b>inside</b> the guest, and KMS is the outside verifier. Nothing on the node has to be trusted for a confidential pod.</li>
+      <li>And because it is a RuntimeClass, agent-sandbox and everything Carlos showed sits on top <b>unchanged</b>.</li>
+    </ul>
+    <p><i>Next:</i> Carlos, where to start.</p>
+  </aside>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-who="Carlos" aria-label="Slide 19 of 20: Call to action">
+  <h2>Start with a blueprint this afternoon</h2>
+  <div class="cta">
+    <div>
+      <p class="lead">Runnable, with the output of a real run on every page.</p>
+      <ul>
+        <li><b>Hello sandbox</b>: the one-line opt-in</li>
+        <li><b>Coding agent</b>: issue in, pull request out</li>
+        <li><b>Warm pool</b>: Ready in under 1 s</li>
+        <li><b>Pause and resume</b>, IDE in the browser</li>
+        <li><b>Managed agents</b>: Claude, OpenAI</li>
+        <li><b>Network</b> and <b>Cedar</b> policy</li>
+        <li><b>CI/CD</b>: Docker, GitHub Actions, GitLab</li>
+        <li><b>Confidential</b>: encrypted, signed images</li>
+      </ul>
+      <p style="margin-top:1.2rem"><span class="pill">github.com/aws-samples/sample-eks-nitro-sandbox</span></p>
+    </div>
+    <figure class="qr">
+      <img src="blueprints-qr.svg" alt="QR code linking to github.com/aws-samples/sample-eks-nitro-sandbox">
+      <figcaption>aws-samples/<br>sample-eks-nitro-sandbox</figcaption>
+    </figure>
+  </div>
+  <aside class="notes">
+    <p><b>Carlos.</b> Everything on this stage came from this repository, and each page shows the output of a real run so you can compare yours.</p>
+    <ul>
+      <li>Start with <b>hello sandbox</b>: ten minutes, one line, the proof you saw on slide 7.</li>
+      <li>Then the <b>coding agent</b> and the <b>warm pool</b>; they do not depend on each other.</li>
+      <li>From there: managed agents, CI runners, storage, and the <b>confidential</b> blueprints that walk Todd's loop end to end with KMS.</li>
+    </ul>
+    <p>Scan the code or search for <code>aws-samples sample-eks-nitro-sandbox</code>. Issues and pull requests welcome.</p>
+    <p><i>Next:</i> thanks and questions.</p>
+  </aside>
+</section>
+
+<!-- 20 -->
+<section class="slide title-slide" data-who="Carlos + Todd" aria-label="Slide 20 of 20: Thank you">
+  <h1>Thank you</h1>
+  <p class="muted big">Every agent its own kernel. One line on a pod spec.<br>Policy enforced inside the boundary, verified from outside.</p>
+  <p style="margin-top:1rem"><span class="pill">github.com/aws-samples/sample-eks-nitro-sandbox</span><span class="pill">kubernetes-sigs/agent-sandbox</span><span class="pill">cedarpolicy.com</span><span class="pill">firecracker-microvm.github.io</span></p>
+  <div class="speakers">
+    <div class="speaker">
+      <img src="carlos-santana.jpg" alt="">
+      <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div></div>
+    </div>
+    <div class="speaker">
+      <div class="avatar" aria-hidden="true">TN</div>
+      <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div></div>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>Thank you. We are both around the AWS booth after this for questions and to walk through any blueprint.</p>
+    <p><i>If time remains:</i> take one or two questions from the floor.</p>
+  </aside>
+</section>
+
+</div>
+<div class="foot"><span>Agent Sandbox on EKS: Hardware-Isolated microVM Pods for AI Agents</span><span id="pageno" aria-live="polite"></span></div>
+
+<dialog class="help" id="help" aria-labelledby="help-title">
+  <div class="box">
+    <h3 id="help-title">Keys</h3>
+    <dl>
+      <dt>&rarr; &larr; Space</dt><dd>next / previous slide</dd>
+      <dt>Home / End</dt><dd>first / last slide</dd>
+      <dt>p</dt><dd>open the presenter view (second window)</dd>
+      <dt>n</dt><dd>show notes under the slide</dd>
+      <dt>f</dt><dd>full screen</dd>
+      <dt>?</dt><dd>this help; Esc closes</dd>
+    </dl>
+    <p class="muted" style="font-size:1rem;margin:1rem 0 0">Presenter view: t resets the timer, + and &minus; resize the notes.</p>
+  </div>
+</dialog>
+<script>
+  // Keys: arrows / space / PageUp-PageDown move, Home / End, n toggles notes at the
+  // bottom, f toggles full screen, p opens the presenter view in a second window,
+  // ? shows the key help. The two windows follow each other.
+  // index.html?presenter is the presenter view; index.html?embed is one slide with
+  // no keys, used for the previews inside it.
+  const slides = Array.from(document.querySelectorAll('section.slide'));
+  const params = new URLSearchParams(location.search);
+  const mode = params.has('presenter') ? 'presenter' : params.has('embed') ? 'embed' : 'deck';
+  const clamp = (n) => Math.max(0, Math.min(slides.length - 1, n));
+  const fromHash = () => clamp((parseInt(location.hash.slice(1), 10) || 1) - 1);
+  const title = (k) => (slides[k].querySelector('h1,h2') || {}).textContent.trim() || '';
+  const who = (k) => slides[k].dataset.who || '';
+  let i = fromHash();
+
+  // Sync: a BroadcastChannel where the browser allows it (http), and
+  // postMessage between the opener and the popup (also works from file://).
+  const MSG = 'agent-sandbox-talk-goto';
+  const channel = mode !== 'embed' && 'BroadcastChannel' in window ? new BroadcastChannel(MSG) : null;
+  let peer = mode === 'presenter' ? window.opener : null;
+  function send(n) {
+    if (mode === 'embed') return;
+    if (channel) channel.postMessage({ type: MSG, n });
+    if (peer && !peer.closed) peer.postMessage({ type: MSG, n }, '*');
+  }
+  function receive(data, source) {
+    if (mode === 'embed' || !data || data.type !== MSG) return;
+    if (source && mode === 'deck') peer = source;
+    if (typeof data.n === 'number' && data.n !== i) show(data.n, true);
+  }
+  if (channel) channel.onmessage = (e) => receive(e.data);
+  window.addEventListener('message', (e) => receive(e.data, e.source));
+
+  function show(n, remote) {
+    i = clamp(n);
+    slides.forEach((s, k) => {
+      s.classList.toggle('active', k === i);
+      s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+    });
+    document.getElementById('pageno').textContent = (i + 1) + ' / ' + slides.length;
+    history.replaceState(null, '', location.search + '#' + (i + 1));
+    if (mode === 'presenter') renderPresenter();
+    if (!remote) send(i);
+  }
+
+  function openPresenter() {
+    const url = location.pathname + '?presenter#' + (i + 1);
+    peer = window.open(url, 'agent-sandbox-talk-presenter', 'width=1500,height=900');
+  }
+  function toggleFullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen().catch(() => {});
+  }
+  const help = document.getElementById('help');
+  function toggleHelp() { if (help.open) help.close(); else help.showModal(); }
+
+  if (mode !== 'embed') {
+    document.addEventListener('keydown', (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (help.open && e.key !== 'Escape' && e.key !== '?') return;
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      else if (e.key === 'Home') show(0);
+      else if (e.key === 'End') show(slides.length - 1);
+      else if (e.key === '?') toggleHelp();
+      else if (mode === 'deck' && e.key === 'n') document.body.classList.toggle('show-notes');
+      else if (mode === 'deck' && e.key === 'f') toggleFullscreen();
+      else if (mode === 'deck' && e.key === 'p') openPresenter();
+      else if (mode === 'presenter' && e.key === 't') resetTimer();
+      else if (mode === 'presenter' && (e.key === '+' || e.key === '=')) notesSize(0.1);
+      else if (mode === 'presenter' && e.key === '-') notesSize(-0.1);
+    });
+  }
+  if (mode === 'deck') {
+    document.addEventListener('click', (e) => {
+      if (help.open || e.target.closest('pre,a,.terminal,dialog')) return;
+      show(e.clientX > innerWidth / 3 ? i + 1 : i - 1);
+    });
+  }
+  if (mode === 'embed') {
+    document.body.classList.add('embed');
+    window.addEventListener('hashchange', () => show(fromHash(), true));
+  }
+
+  // --- Presenter view ---
+  let started = Date.now();
+  let pv = null;
+  function resetTimer() { started = Date.now(); tick(); }
+  function notesSize(d) {
+    const cur = parseFloat(localStorage.getItem('agent-sandbox-talk-notes-size') || '1.6');
+    const next = Math.max(1, Math.min(3, cur + d));
+    localStorage.setItem('agent-sandbox-talk-notes-size', next.toFixed(1));
+    document.body.style.setProperty('--pv-notes-size', next.toFixed(1) + 'rem');
+  }
+  function tick() {
+    if (!pv) return;
+    const s = Math.floor((Date.now() - started) / 1000);
+    pv.timer.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    pv.clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+  function frameSrc(k) { return location.pathname + '?embed#' + (k + 1); }
+  function fit(box) {
+    const f = box.querySelector('iframe');
+    if (f) f.style.transform = 'scale(' + box.clientWidth / 1920 + ')';
+  }
+  function buildPresenter() {
+    document.body.classList.add('presenter');
+    document.title = 'Presenter: ' + document.title;
+    const root = document.createElement('div');
+    root.className = 'pv';
+    root.innerHTML =
+      '<div class="pv-bar" role="toolbar" aria-label="Presenter controls">' +
+        '<span>Slide <b class="pv-num"></b></span>' +
+        '<span class="pv-who"></span>' +
+        '<span class="pv-title"></span>' +
+        '<span>Elapsed <b class="pv-timer">0:00</b></span>' +
+        '<span><b class="pv-clock"></b></span>' +
+        '<button type="button" data-a="prev" aria-label="Previous slide">&larr;</button>' +
+        '<button type="button" data-a="next" aria-label="Next slide">&rarr;</button>' +
+        '<button type="button" data-a="timer">Reset timer</button>' +
+      '</div>' +
+      '<div class="pv-left">' +
+        '<div class="pv-frame cur"><iframe title="Current slide" tabindex="-1"></iframe></div>' +
+        '<div class="pv-next">' +
+          '<div class="pv-frame nxt"><iframe title="Next slide" tabindex="-1"></iframe><div class="pv-end" hidden>End of deck</div></div>' +
+          '<div><div class="pv-label">Next</div><div class="pv-next-title"></div>' +
+          '<p class="pv-keys">&larr; &rarr; move &middot; t reset timer &middot; + / &minus; notes size &middot; 20 min total, about 1 min a slide</p></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="pv-notes" aria-live="polite" aria-label="Speaker notes"></div>';
+    document.body.appendChild(root);
+    pv = {
+      num: root.querySelector('.pv-num'), who: root.querySelector('.pv-who'), title: root.querySelector('.pv-title'),
+      timer: root.querySelector('.pv-timer'), clock: root.querySelector('.pv-clock'),
+      cur: root.querySelector('.pv-frame.cur'), nxt: root.querySelector('.pv-frame.nxt'),
+      end: root.querySelector('.pv-end'), nextTitle: root.querySelector('.pv-next-title'),
+      notes: root.querySelector('.pv-notes'),
+    };
+    pv.cur.querySelector('iframe').src = frameSrc(i);
+    pv.nxt.querySelector('iframe').src = frameSrc(clamp(i + 1));
+    root.querySelector('.pv-bar').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); const a = b && b.dataset.a;
+      if (a === 'prev') show(i - 1); else if (a === 'next') show(i + 1); else if (a === 'timer') resetTimer();
+    });
+    const ro = new ResizeObserver(() => { fit(pv.cur); fit(pv.nxt); });
+    ro.observe(pv.cur); ro.observe(pv.nxt);
+    notesSize(0);
+    setInterval(tick, 1000);
+    tick();
+  }
+  function renderPresenter() {
+    if (!pv) return;
+    const last = i === slides.length - 1;
+    pv.num.textContent = (i + 1) + ' / ' + slides.length;
+    pv.who.textContent = who(i);
+    pv.title.textContent = title(i);
+    // A fragment-only change navigates the preview without reloading it.
+    pv.cur.querySelector('iframe').src = frameSrc(i);
+    pv.nxt.querySelector('iframe').hidden = last;
+    pv.end.hidden = !last;
+    if (!last) pv.nxt.querySelector('iframe').src = frameSrc(i + 1);
+    pv.nextTitle.textContent = last ? 'End of deck' : (who(i + 1) + ': ' + title(i + 1));
+    const notes = slides[i].querySelector('.notes');
+    pv.notes.innerHTML = notes ? notes.innerHTML : '<p class="muted">No notes for this slide.</p>';
+    pv.notes.scrollTop = 0;
+  }
+
+  if (mode === 'presenter') buildPresenter();
+  show(i, true);
+</script>
+</body>
+</html>
