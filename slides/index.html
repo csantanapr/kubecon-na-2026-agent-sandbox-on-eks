@@ -55,6 +55,9 @@
   .speaker .avatar { display: flex; align-items: center; justify-content: center; background: var(--panel); font-size: 2.6rem; font-weight: 700; color: var(--accent); }
   .speaker-name { font-size: 1.9rem; font-weight: 700; line-height: 1.2; }
   .speaker-title { font-size: 1.5rem; color: var(--muted); }
+  .speaker-link { display: inline-flex; align-items: center; gap: .4em; margin-top: .3em; font-size: 1.35rem; color: var(--blue); text-decoration: none; }
+  .speaker-link:hover, .speaker-link:focus-visible { text-decoration: underline; }
+  .speaker-link .li { width: 1.1em; height: 1.1em; color: #0a66c2; flex: none; }
   .half { font-size: 1.15rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 .3em; }
   .fill { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; }
   .fill svg { width: 100%; height: 100%; max-height: 72vh; }
@@ -146,11 +149,11 @@
   <div class="speakers">
     <div class="speaker">
       <img src="carlos-santana.jpg" alt="">
-      <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div></div>
+      <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div><a class="speaker-link" href="https://www.linkedin.com/in/csantanapr/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>linkedin.com/in/csantanapr</a></div>
     </div>
     <div class="speaker">
       <img src="todd-neal.jpg" alt="">
-      <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div></div>
+      <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div><a class="speaker-link" href="https://www.linkedin.com/in/toddneal/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>linkedin.com/in/toddneal</a></div>
     </div>
   </div>
   <aside class="notes">
@@ -950,11 +953,11 @@ route:   <span class="hl">none</span></pre>
   <div class="speakers">
     <div class="speaker">
       <img src="carlos-santana.jpg" alt="">
-      <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div></div>
+      <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div><a class="speaker-link" href="https://www.linkedin.com/in/csantanapr/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>linkedin.com/in/csantanapr</a></div>
     </div>
     <div class="speaker">
       <img src="todd-neal.jpg" alt="">
-      <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div></div>
+      <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div><a class="speaker-link" href="https://www.linkedin.com/in/toddneal/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>linkedin.com/in/toddneal</a></div>
     </div>
   </div>
   <aside class="notes">
