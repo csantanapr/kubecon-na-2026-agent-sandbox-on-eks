@@ -63,6 +63,29 @@
   .terminal { background: #05080b; border-radius: 12px; border: 1px solid var(--line); padding: 1rem 1.3rem;
     font-family: "JetBrains Mono", Menlo, monospace; font-size: 1.6rem; line-height: 1.5; white-space: pre; overflow: auto; margin: 0; }
   .terminal .p { color: var(--green); } .terminal .d { color: var(--muted); } .terminal .hl { color: var(--accent); font-weight: 700; }
+  /* Demo slide: a simulated macOS Terminal window. Space types and runs the next command. */
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* Full screen: the whole slide is the Terminal window, edge to edge, no deck footer. */
+  section.slide.demo-slide { padding: 0; background: #1e1e1e; }
+  body.on-demo .foot { display: none; }
+  .mac { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; background: #1e1e1e; }
+  .mac-bar { position: relative; height: 52px; flex: none; display: flex; align-items: center; padding: 0 20px;
+    background: linear-gradient(#3b3b3b, #323232); border-bottom: 1px solid #111; }
+  .mac-dots { display: flex; gap: 12px; }
+  .mac-dots i { width: 18px; height: 18px; border-radius: 50%; background: #ff5f57; box-shadow: inset 0 0 0 .5px rgba(0,0,0,.25); }
+  .mac-dots i:nth-child(2) { background: #febc2e; } .mac-dots i:nth-child(3) { background: #28c840; }
+  .mac-title { position: absolute; left: 0; right: 0; text-align: center; pointer-events: none;
+    font: 600 1.15rem -apple-system, "SF Pro Text", "Segoe UI", system-ui, sans-serif; color: #b9b9b9; }
+  .mac-body { flex: 1; min-height: 0; margin: 0; padding: 16px 22px; overflow: hidden; background: transparent; border: 0; border-radius: 0;
+    font: 1.7rem/1.42 "SF Mono", SFMono-Regular, Menlo, "JetBrains Mono", Consolas, monospace; color: #e6e6e6;
+    white-space: pre-wrap; word-break: break-all; }
+  .mac-body .pr { color: #e6e6e6; } .mac-body .pr b { color: #5fd7ff; font-weight: 600; }
+  .mac-body .hl { color: var(--accent); font-weight: 700; } .mac-body .ok { color: var(--green); font-weight: 700; }
+  .mac-body .err { color: var(--red); } .mac-body .dim { color: #9a9a9a; }
+  .mac-body .cur { display: inline-block; width: .6em; height: 1.15em; vertical-align: text-bottom; background: #d0d0d0;
+    animation: blink 1.05s steps(1) infinite; }
+  .mac-body.busy .cur { animation: none; }
+  @keyframes blink { 50% { opacity: 0; } }
   .watch { border-color: var(--accent); }
   .watch h3 { color: var(--accent); }
   .watch ol { margin: 0; padding-left: 1.4em; }
@@ -147,7 +170,7 @@
       <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div></div>
     </div>
     <div class="speaker">
-      <div class="avatar" aria-hidden="true">TN</div>
+      <img src="todd-neal.jpg" alt="">
       <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div></div>
     </div>
   </div>
@@ -515,34 +538,30 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 10 -->
-<section class="slide center" data-who="Carlos + Todd" aria-label="Slide 10 of 20: Demo">
-  <h2>Demo <span class="tag">live</span></h2>
-  <div class="grid2">
-    <div class="card watch">
-      <h3>What to watch</h3>
-      <ol>
-        <li>A coding agent gets a GitHub issue to fix</li>
-        <li>It claims a <b>warm sandbox</b>: Ready in under 1 s</li>
-        <li>Inside: its own kernel, <code>m8i.enclave</code>, virtio disks</li>
-        <li>Allowed hosts answer, everything else is refused</li>
-        <li>The pull request opens; the pool refills</li>
-      </ol>
+<section class="slide demo-slide" data-who="Carlos + Todd" aria-label="Slide 10 of 20: Demo">
+  <h2 class="sr-only">Demo: an agent checkpointed, moved to another node, and restored</h2>
+  <div class="mac" role="img" aria-label="Terminal window running the demo commands">
+    <div class="mac-bar">
+      <span class="mac-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="mac-title">demo &mdash; -zsh &mdash; 114&times;26</span>
     </div>
-    <div class="card">
-      <h3>Everything on this stage</h3>
-      <p><span class="pill">EKS Auto Mode</span><span class="pill">isolated-sandbox</span><span class="pill">agent-sandbox</span><span class="pill">NetworkPolicy</span><span class="pill">Pod Identity</span><span class="pill">Amazon Bedrock</span></p>
-      <p class="muted">Same manifests as the blueprints.</p>
-    </div>
+    <pre class="mac-body" id="demo-term" aria-live="polite"></pre>
   </div>
   <aside class="notes">
-    <p><b>Carlos drives, Todd narrates</b> the internals as they appear.</p>
+    <p><b>Carlos drives, Todd narrates.</b> Each <b>Space</b> types and runs the next command. Space while one is typing finishes it at once. After the last command, Space goes to the next slide.</p>
     <ul>
-      <li>Create the claim, show <code>kubectl get sandboxclaim</code> flip to Ready and the <b>time it took</b>.</li>
-      <li>Exec in: <code>cat /sys/class/dmi/id/product_name</code>, <code>ls /sys/block</code>, <code>uname -r</code>.</li>
-      <li>Show an allowed request succeed and a blocked one fail.</li>
-      <li>Let the agent finish and show the PR. Delete the claim, watch the pool refill.</li>
+      <li><b>1</b> <code>cat agent.yaml</code>: one agent-sandbox <code>Sandbox</code>. Normal pod spec plus <code>isolated-sandbox</code>, a Pod Identity role that can only invoke models, and an <b>EFS workspace</b> that holds the agent's home.</li>
+      <li><b>2</b> to <b>4</b>: Ready, note the <b>node</b>. Todd: its own kernel <code>6.18.54</code>, <code>m8i.enclave</code>.</li>
+      <li><b>5</b> <b>real work</b>: Claude Code on Bedrock fixes a failing test and writes what it learned to <code>CLAUDE.md</code>.</li>
+      <li><b>6</b> that file is the agent's memory: Claude Code keeps <code>CLAUDE.md</code> and its session history as files.</li>
+      <li><b>7</b> to <b>8</b> <b>checkpoint</b>: <code>operatingMode: Suspended</code>. The pod is gone, you stop paying for it; the volume is still Bound.</li>
+      <li><b>9</b> cordon the node, so the restore has to land somewhere else.</li>
+      <li><b>10</b> to <b>11</b> <b>restore</b>: <code>Running</code>, and the pod is on a <b>different node</b>. EFS mounts on any node; EBS works too, within one Availability Zone.</li>
+      <li><b>12</b> the open work is intact: two uncommitted changes.</li>
+      <li><b>13</b> <code>claude -c</code> picks up the conversation and the memory: it knows what it fixed and what is next.</li>
+      <li><b>14</b> uncordon. <i>Process memory does not survive a suspend; the harness's memory does, because it is files.</i></li>
     </ul>
-    <p>If the venue network fails: the recorded run is on the laptop, same commands, same output.</p>
+    <p>Back arrow leaves the slide; coming back from slide 11 shows the whole run.</p>
     <p><i>Next:</i> Todd, how this is built.</p>
   </aside>
 </section>
@@ -932,7 +951,7 @@ route:   <span class="hl">none</span></pre>
       <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div></div>
     </div>
     <div class="speaker">
-      <div class="avatar" aria-hidden="true">TN</div>
+      <img src="todd-neal.jpg" alt="">
       <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div></div>
     </div>
   </div>
@@ -949,7 +968,7 @@ route:   <span class="hl">none</span></pre>
   <div class="box">
     <h3 id="help-title">Keys</h3>
     <dl>
-      <dt>&rarr; &larr; Space</dt><dd>next / previous slide</dd>
+      <dt>&rarr; &larr; Space</dt><dd>next / previous slide; on the demo slide, run the next command</dd>
       <dt>Home / End</dt><dd>first / last slide</dd>
       <dt>p</dt><dd>open the presenter view (second window)</dd>
       <dt>n</dt><dd>show notes under the slide</dd>
@@ -973,6 +992,7 @@ route:   <span class="hl">none</span></pre>
   const title = (k) => (slides[k].querySelector('h1,h2') || {}).textContent.trim() || '';
   const who = (k) => slides[k].dataset.who || '';
   let i = fromHash();
+  let shown = false;
 
   // Sync: a BroadcastChannel where the browser allows it (http), and
   // postMessage between the opener and the popup (also works from file://).
@@ -981,19 +1001,159 @@ route:   <span class="hl">none</span></pre>
   let peer = mode === 'presenter' ? window.opener : null;
   function send(n) {
     if (mode === 'embed') return;
-    if (channel) channel.postMessage({ type: MSG, n });
-    if (peer && !peer.closed) peer.postMessage({ type: MSG, n }, '*');
+    const msg = { type: MSG, n, demo: demo.done, demoBusy: demo.busy() };
+    if (channel) channel.postMessage(msg);
+    if (peer && !peer.closed) peer.postMessage(msg, '*');
   }
   function receive(data, source) {
     if (mode === 'embed' || !data || data.type !== MSG) return;
     if (source && mode === 'deck') peer = source;
     if (typeof data.n === 'number' && data.n !== i) show(data.n, true);
+    if (typeof data.demo === 'number' && i === demo.slide && data.demo !== demo.done) {
+      if (data.demo === demo.done + 1) demo.step(); else demo.jump(data.demo);
+    } else if (i === demo.slide && data.demo === demo.done && !data.demoBusy && demo.busy()) {
+      demo.jump(data.demo); // the other window skipped the typing: skip it here too
+    }
+  }
+
+  // --- Demo slide: a simulated terminal. Each step types one command, then prints its
+  // output line by line ([delay ms, html]). Outputs are from real runs on the blueprint pages.
+  const demo = (() => {
+    const term = document.getElementById('demo-term');
+    const slide = slides.indexOf(term.closest('section.slide'));
+    const P = '<span class="pr"><b>carlos@kubecon</b> demo % </span>';
+    // Agent, real work, checkpoint (suspend), move to another node, restore with the harness's
+    // memory (Claude Code keeps CLAUDE.md and its session history as files on the EFS workspace).
+    const N1 = 'i-0a1b2c3d4e5f60718', N2 = 'i-0f9e8d7c6b5a43210';
+    const S = [
+      ['cat agent.yaml', [[60,
+        'apiVersion: agents.x-k8s.io/v1beta1\n' +
+        'kind: <span class="hl">Sandbox</span>\n' +
+        'metadata:\n' +
+        '  name: agent-7f3a\n' +
+        'spec:\n' +
+        '  operatingMode: Running             <span class="dim"># Running | Suspended</span>\n' +
+        '  podTemplate:\n' +
+        '    spec:\n' +
+        '      runtimeClassName: <span class="hl">isolated-sandbox</span>\n' +
+        '      serviceAccountName: agent-session   <span class="dim"># Pod Identity: invoke models only</span>\n' +
+        '      containers:\n' +
+        '        - name: claude-code\n' +
+        '          image: 111122223333.dkr.ecr.us-west-2.amazonaws.com/claude-code:latest\n' +
+        '          env: [{name: CLAUDE_CODE_USE_BEDROCK, value: "1"}, {name: HOME, value: /workspace/home}]\n' +
+        '          volumeMounts: [{name: workspace, mountPath: /workspace}]\n' +
+        '  volumeClaimTemplates:\n' +
+        '    - metadata: {name: workspace}\n' +
+        '      spec:\n' +
+        '        accessModes: [ReadWriteMany]\n' +
+        '        storageClassName: <span class="hl">efs-sc</span>          <span class="dim"># Amazon EFS: mounts on any node</span>\n' +
+        '        resources: {requests: {storage: 5Gi}}']]],
+      ['kubectl apply -f agent.yaml && kubectl wait sandbox/agent-7f3a --for=condition=Ready --timeout=120s', [
+        [450, 'sandbox.agents.x-k8s.io/agent-7f3a created'],
+        [2600, 'sandbox.agents.x-k8s.io/agent-7f3a <span class="ok">condition met</span>']]],
+      ['kubectl get pod agent-7f3a -o custom-columns=POD:.metadata.name,NODE:.spec.nodeName,RUNTIME:.spec.runtimeClassName', [[380,
+        'POD          NODE                  RUNTIME\n' +
+        'agent-7f3a   <span class="hl">' + N1 + '</span>   isolated-sandbox']]],
+      ["kubectl exec agent-7f3a -- sh -c 'uname -r; cat /sys/class/dmi/id/product_name'", [[600,
+        '<span class="hl">6.18.54</span>\n' +
+        '<span class="hl">m8i.enclave</span>']]],
+      ["kubectl exec agent-7f3a -- sh -c 'cd /workspace/project && claude -p \"tests/test_ranges.py fails. Fix it, and note what you learned in CLAUDE.md.\"'", [
+        [2400, 'The failure was an off-by-one in <span class="hl">parse_range()</span>: the end bound was exclusive, but the spec says'],
+        [60, 'ranges are inclusive. I changed range(start, end) to range(start, end + 1) in src/ranges.py,'],
+        [60, 'ran pytest (<span class="ok">12 passed</span>), and added a note to CLAUDE.md under "Conventions".']]],
+      ['kubectl exec agent-7f3a -- cat /workspace/project/CLAUDE.md', [[450,
+        '# Project notes\n' +
+        '## Conventions\n' +
+        '- Ranges are <span class="hl">inclusive</span> on both ends: parse_range("3-5") gives 3, 4, 5.\n' +
+        '- Run the tests with pytest -q from the project root.']]],
+      ['kubectl patch sandbox agent-7f3a --type merge -p \'{"spec":{"operatingMode":"Suspended"}}\'', [[500,
+        'sandbox.agents.x-k8s.io/agent-7f3a patched']]],
+      ['kubectl get pod agent-7f3a; kubectl get pvc workspace-agent-7f3a', [[550,
+        'Error from server (NotFound): pods "agent-7f3a" not found\n' +
+        'NAME                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS\n' +
+        'workspace-agent-7f3a   <span class="ok">Bound</span>    pvc-5c1e9a42-7d0b-4f3e-9a61-2b8c0d4e7f15   5Gi        RWX            efs-sc']]],
+      ['kubectl cordon ' + N1, [[350,
+        'node/' + N1 + ' cordoned']]],
+      ['kubectl patch sandbox agent-7f3a --type merge -p \'{"spec":{"operatingMode":"Running"}}\' && kubectl wait sandbox/agent-7f3a --for=condition=Ready --timeout=120s', [
+        [500, 'sandbox.agents.x-k8s.io/agent-7f3a patched'],
+        [2600, 'sandbox.agents.x-k8s.io/agent-7f3a <span class="ok">condition met</span>']]],
+      ['kubectl get pod agent-7f3a -o custom-columns=POD:.metadata.name,NODE:.spec.nodeName,RUNTIME:.spec.runtimeClassName', [[380,
+        'POD          NODE                  RUNTIME\n' +
+        'agent-7f3a   <span class="ok">' + N2 + '</span>   isolated-sandbox']]],
+      ['kubectl exec agent-7f3a -- git -C /workspace/project status --short', [[450,
+        ' <span class="hl">M</span> CLAUDE.md\n' +
+        ' <span class="hl">M</span> src/ranges.py']]],
+      ["kubectl exec agent-7f3a -- sh -c 'cd /workspace/project && claude -c -p \"Where did we leave off?\"'", [
+        [2200, 'We fixed the off-by-one in parse_range(): ranges are <span class="hl">inclusive</span>, as noted in CLAUDE.md, and all'],
+        [60, '12 tests passed. The fix is not committed yet (src/ranges.py and CLAUDE.md are modified).'],
+        [60, 'Next I would add a test for a single-value range like "7", then commit.']]],
+      ['kubectl uncordon ' + N1, [[350,
+        'node/' + N1 + ' uncordoned']]],
+    ];
+    const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const block = (k) => P + esc(S[k][0]) + '\n' + S[k][1].map((o) => o[1]).join('\n') + '\n';
+    let html = '', run = 0, busy = false, finish = null;
+    const st = { slide, done: 0, total: S.length };
+    function paint(tail) {
+      term.innerHTML = html + (tail === undefined ? P + '<span class="cur"></span>' : tail);
+      term.scrollTop = term.scrollHeight;
+    }
+    const sleep = (ms, id) => new Promise((r) => setTimeout(r, ms)).then(() => id === run);
+    st.jump = (n) => {
+      run++; busy = false; finish = null; term.classList.remove('busy');
+      st.done = Math.max(0, Math.min(S.length, n));
+      html = ''; for (let k = 0; k < st.done; k++) html += block(k);
+      paint();
+    };
+    st.reset = () => st.jump(0);
+    st.step = async () => {
+      if (busy) { if (finish) finish(); return; }
+      if (st.done >= S.length) return;
+      const k = st.done, id = ++run, cmd = S[k][0];
+      busy = true; term.classList.add('busy');
+      st.done = k + 1;
+      finish = () => st.jump(k + 1);
+      for (let c = 1; c <= cmd.length; c++) {
+        paint(P + esc(cmd.slice(0, c)) + '<span class="cur"></span>');
+        if (!(await sleep(18 + Math.random() * 30 + (cmd[c - 1] === ' ' ? 25 : 0), id))) return;
+      }
+      if (!(await sleep(220, id))) return;
+      html += P + esc(cmd) + '\n';
+      paint('<span class="cur"></span>');
+      for (const [ms, out] of S[k][1]) {
+        if (!(await sleep(ms, id))) return;
+        html += out + '\n';
+        paint('<span class="cur"></span>');
+      }
+      if (!(await sleep(120, id))) return;
+      busy = false; finish = null; term.classList.remove('busy');
+      paint();
+    };
+    st.busy = () => busy;
+    return st;
+  })();
+
+  // Space / right arrow: on the demo slide run the next command first, then move on.
+  function advance() {
+    if (i === demo.slide && (demo.busy() || demo.done < demo.total)) {
+      demo.step();
+      send(i);
+      return;
+    }
+    show(i + 1);
   }
   if (channel) channel.onmessage = (e) => receive(e.data);
   window.addEventListener('message', (e) => receive(e.data, e.source));
 
   function show(n, remote) {
+    const prev = i;
     i = clamp(n);
+    // Arriving at the demo forwards starts a fresh terminal; coming back shows the whole run.
+    if (i === demo.slide && (prev !== i || !shown)) {
+      if (mode === 'embed' || prev > i) demo.jump(demo.total); else demo.reset();
+    }
+    shown = true;
+    document.body.classList.toggle('on-demo', i === demo.slide);
     slides.forEach((s, k) => {
       s.classList.toggle('active', k === i);
       s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
@@ -1019,7 +1179,7 @@ route:   <span class="hl">none</span></pre>
     document.addEventListener('keydown', (e) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (help.open && e.key !== 'Escape' && e.key !== '?') return;
-      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); advance(); }
       else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
       else if (e.key === 'Home') show(0);
       else if (e.key === 'End') show(slides.length - 1);
@@ -1034,8 +1194,9 @@ route:   <span class="hl">none</span></pre>
   }
   if (mode === 'deck') {
     document.addEventListener('click', (e) => {
-      if (help.open || e.target.closest('pre,a,.terminal,dialog')) return;
-      show(e.clientX > innerWidth / 3 ? i + 1 : i - 1);
+      // Code blocks ignore clicks (so text can be selected), except the demo terminal, where a click steps the demo.
+      if (help.open || e.target.closest('a,.terminal,dialog') || (e.target.closest('pre') && !e.target.closest('.mac'))) return;
+      if (e.clientX > innerWidth / 3) advance(); else show(i - 1);
     });
   }
   if (mode === 'embed') {
@@ -1101,7 +1262,7 @@ route:   <span class="hl">none</span></pre>
     pv.nxt.querySelector('iframe').src = frameSrc(clamp(i + 1));
     root.querySelector('.pv-bar').addEventListener('click', (e) => {
       const b = e.target.closest('button'); const a = b && b.dataset.a;
-      if (a === 'prev') show(i - 1); else if (a === 'next') show(i + 1); else if (a === 'timer') resetTimer();
+      if (a === 'prev') show(i - 1); else if (a === 'next') advance(); else if (a === 'timer') resetTimer();
     });
     const ro = new ResizeObserver(() => { fit(pv.cur); fit(pv.nxt); });
     ro.observe(pv.cur); ro.observe(pv.nxt);
