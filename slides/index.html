@@ -136,6 +136,22 @@
   .help dl { display: grid; grid-template-columns: auto 1fr; gap: .4rem 1.4rem; margin: 0; font-size: 1.2rem; }
   .help dt { color: var(--accent); font-family: Menlo, monospace; }
   .help dd { margin: 0; }
+  /* Slide 21: two promo panels, light and dark, edge to edge. */
+  section.slide.promo { padding: 0; flex-direction: row; }
+  .promo .panel { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 6vh 5vw 8vh; min-width: 0; }
+  .promo .panel.light { background: linear-gradient(160deg, #ece6fb 0%, #d9d2f7 100%); color: #15171f; }
+  .promo .panel.dark { background: linear-gradient(135deg, #0c2a40 0%, #123c5e 55%, #5a2ea6 100%); color: #fff; }
+  .promo .kicker { font-size: 1.25rem; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 1.2rem; opacity: .85; }
+  .promo h2 { font-size: 5.2rem; line-height: 1.02; margin: 0 0 1.2rem; letter-spacing: -.02em; }
+  .promo .sub { font-size: 2.1rem; margin: 0 0 2.2rem; opacity: .9; }
+  .promo .row { display: flex; align-items: center; gap: 2.4rem; }
+  .promo .row img { width: 270px; height: 270px; display: block; background: #fff; border-radius: 8px; flex: none; }
+  .promo .row p { margin: 0; font-size: 1.9rem; line-height: 1.3; }
+  .promo .row b { display: block; font-size: 2.3rem; margin-bottom: .3rem; }
+  .promo .row .meta { margin-top: 1.4rem; }
+  .promo .url { font-size: 1.9rem; margin: 2.2rem 0 0; font-weight: 500; }
+  .promo .fine { font-size: 1rem; opacity: .7; margin: .8rem 0 0; }
+  body.on-promo .foot { display: none; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
   @media (max-width: 1100px) { .grid2, .grid3, .cta { grid-template-columns: 1fr; } .cta ul { columns: 1; } }
 </style>
@@ -144,7 +160,7 @@
 <div class="deck" role="region" aria-roledescription="slide deck" aria-label="Slides">
 
 <!-- 1 -->
-<section class="slide title-slide" data-who="Carlos" aria-label="Slide 1 of 20: Title">
+<section class="slide title-slide" data-who="Carlos" aria-label="Slide 1 of 21: Title">
   <p class="half">KubeCon + CloudNativeCon North America 2026 &middot; <span class="co-venue">Demo Theater</span></p>
   <h1>Agent Sandbox on EKS:<br>Hardware-Isolated microVM Pods for AI Agents</h1>
   <p class="muted big">Give every agent its own kernel, on a normal pod spec,<br>with open source components you can read.</p>
@@ -170,7 +186,7 @@
 </section>
 
 <!-- 2 -->
-<section class="slide" data-who="Carlos" aria-label="Slide 2 of 20">
+<section class="slide" data-who="Carlos" aria-label="Slide 2 of 21">
   <h2>Agents now write and run their own code</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 500" role="img" aria-label="An agent loop generates code, which runs as a container on the same node and the same Linux kernel as the payments and user services.">
@@ -214,7 +230,7 @@
 </section>
 
 <!-- 3 -->
-<section class="slide" data-who="Carlos" aria-label="Slide 3 of 20">
+<section class="slide" data-who="Carlos" aria-label="Slide 3 of 21">
   <h2>Separate reasoning from execution</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 500" role="img" aria-label="A control plane that runs the agentic loop sends work to a sandbox inside your own cluster; the boundary around the sandbox is highlighted with the question: how strong is it?">
@@ -251,7 +267,7 @@
 </section>
 
 <!-- 4 -->
-<section class="slide" data-who="Carlos" aria-label="Slide 4 of 20">
+<section class="slide" data-who="Carlos" aria-label="Slide 4 of 21">
   <h2>What the boundary can be made of</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 500" role="img" aria-label="Four columns: containers on a shared kernel; a userspace kernel that intercepts syscalls, soft isolation; a VM with its own guest kernel, VM isolation; and a hardware-isolated microVM where the Nitro hypervisor enforces CPU and memory isolation, hardware isolation.">
@@ -307,7 +323,7 @@
 </section>
 
 <!-- 5 -->
-<section class="slide" data-who="Carlos" aria-label="Slide 5 of 20">
+<section class="slide" data-who="Carlos" aria-label="Slide 5 of 21">
   <h2>Give every agent its own kernel</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 500" role="img" aria-label="Inside an EKS node, kubelet and containerd see an ordinary pod. Pods with a runtimeClassName of isolated-sandbox each run inside their own Nitro sandbox with its own kernel; regular pods keep sharing the node kernel.">
@@ -357,7 +373,7 @@
 </section>
 
 <!-- 6 -->
-<section class="slide center" data-who="Carlos" aria-label="Slide 6 of 20">
+<section class="slide center" data-who="Carlos" aria-label="Slide 6 of 21">
   <h2>Kubernetes-native: one line on a normal pod spec</h2>
   <div class="grid2">
     <div>
@@ -394,7 +410,7 @@
 </section>
 
 <!-- 7 -->
-<section class="slide center" data-who="Carlos" aria-label="Slide 7 of 20">
+<section class="slide center" data-who="Carlos" aria-label="Slide 7 of 21">
   <h2>Prove it from inside the pod</h2>
   <div class="grid2">
     <div>
@@ -429,7 +445,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 8 -->
-<section class="slide" data-who="Carlos" aria-label="Slide 8 of 20">
+<section class="slide" data-who="Carlos" aria-label="Slide 8 of 21">
   <h2>agent-sandbox: pods as sessions <span class="tag">kubernetes-sigs</span></h2>
   <div class="fill">
     <svg viewBox="0 0 1200 480" role="img" aria-label="A SandboxTemplate carrying runtimeClassName isolated-sandbox feeds a SandboxWarmPool of pre-booted sandboxes. A SandboxClaim adopts one warm pod in under one second and the pool refills. A Sandbox resource gives one stateful pod with a persistent volume that can be suspended and resumed.">
@@ -475,7 +491,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 9 -->
-<section class="slide" data-who="Carlos" aria-label="Slide 9 of 20">
+<section class="slide" data-who="Carlos" aria-label="Slide 9 of 21">
   <h2>Scoped egress, scoped credentials</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 480" role="img" aria-label="Inside the node, the sandbox's network interface connects to a host-side interface where eBPF network policy is enforced outside the guest; only allowed hosts are reachable. Credentials come from EKS Pod Identity: the pod's ServiceAccount maps to one IAM role scoped to what the agent needs, with no long-lived keys inside the guest.">
@@ -522,7 +538,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 10 -->
-<section class="slide" data-who="Carlos + co" aria-label="Slide 10 of 20: Demo">
+<section class="slide" data-who="Carlos + co" aria-label="Slide 10 of 21: Demo">
   <h2>Demo: pause an agent, resume it on another node <span class="tag">live</span></h2>
   <div class="fill">
     <svg viewBox="0 0 1200 440" role="img" aria-label="Three numbered steps. One: on node A, an agent pod in a Nitro sandbox works on a task; its workspace and session history are files on remote storage. Two: pause releases the pod and its compute; the files stay on remote storage. Three: resume brings the same pod up on node B, which mounts the same files, and the agent continues the task where it stopped.">
@@ -574,7 +590,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 11 -->
-<section class="slide" data-who="co" aria-label="Slide 11 of 20">
+<section class="slide" data-who="co" aria-label="Slide 11 of 21">
   <h2>What sits under a RuntimeClass</h2>
   <div class="fill">
     <img class="diagram" src="sandboxing-how-it-works.png" alt="On the parent EC2 instance: kubelet talks to containerd, containerd to the sandbox-shim, and the shim drives firecracker, which exposes virtio-vsock, virtio-blk and virtio-net devices to the parent kernel. Inside the Nitro Sandbox: eks-sandbox-agent talks to its own containerd, which runs the workload on the sandbox's own kernel. The device data path between the two is a set of Device Memory Buffers. Sandbox lifecycle and runtime notifications pass between the two kernels through the Nitro Hypervisor underneath both.">
@@ -592,7 +608,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 12 -->
-<section class="slide center" data-who="co" aria-label="Slide 12 of 20">
+<section class="slide center" data-who="co" aria-label="Slide 12 of 21">
   <h2>Wiring a RuntimeClass to a shim</h2>
   <div class="grid2 wide-left">
     <div>
@@ -631,7 +647,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 13 -->
-<section class="slide" data-who="co" aria-label="Slide 13 of 20">
+<section class="slide" data-who="co" aria-label="Slide 13 of 21">
   <h2>The confidential use case: the node is the adversary <span class="tag">confidential-sandbox</span></h2>
   <div class="fill">
     <svg viewBox="0 0 1200 460" role="img" aria-label="An EKS node labelled parent instance, not trusted, holds a confidential sandbox. Inside the sandbox: the agent's prompts, model context, source code, credentials and results, on an encrypted overlay, under the sandbox's own kernel. Outside the sandbox on the node: the node operator, a compromised kubelet or containerd, and the Pod Identity credentials. Three crossed-out arrows from the node into the sandbox read: cannot read memory, cannot read disk, cannot exec in. One arrow out of the sandbox to AWS KMS reads: keys released only to an attested guest.">
@@ -689,7 +705,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 14 -->
-<section class="slide" data-who="co" aria-label="Slide 14 of 20">
+<section class="slide" data-who="co" aria-label="Slide 14 of 21">
   <h2>The gap: the node still tells the guest what to run</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 460" role="img" aria-label="The node sends requests into the microVM: create container with an image, args and mounts; exec; read logs. The guest agent receives them. A question asks who decides whether to obey when the node itself is untrusted.">
@@ -729,7 +745,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 15 -->
-<section class="slide center" data-who="co" aria-label="Slide 15 of 20">
+<section class="slide center" data-who="co" aria-label="Slide 15 of 21">
   <h2>Cedar: the policy the guest enforces <span class="tag">CNCF Sandbox</span></h2>
   <div class="grid2">
     <div>
@@ -770,7 +786,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 16 -->
-<section class="slide center" data-who="co" aria-label="Slide 16 of 20">
+<section class="slide center" data-who="co" aria-label="Slide 16 of 21">
   <h2>Two trust models, one mechanism</h2>
   <table>
     <thead><tr><th scope="col"></th><th scope="col">isolated-sandbox</th><th scope="col">confidential-sandbox</th></tr></thead>
@@ -795,7 +811,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 17 -->
-<section class="slide" data-who="co" aria-label="Slide 17 of 20">
+<section class="slide" data-who="co" aria-label="Slide 17 of 21">
   <h2>Closing the loop: a measured policy and an outside verifier</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 470" role="img" aria-label="Six numbered steps. One: the workload owner runs genpolicy on the manifest. Two: the policy goes on the pod as an annotation. Three: the guest agent enforces it and measures it into PCR17. Four: the guest requests an attestation document from the Nitro Secure Module. Five: KMS checks the key policy condition on PCR17 and PCR8 ServiceName. Six: only on a match is the key released, so encrypted image layers and secrets open inside the guest.">
@@ -867,7 +883,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 18 -->
-<section class="slide center" data-who="co" aria-label="Slide 18 of 20">
+<section class="slide center" data-who="co" aria-label="Slide 18 of 21">
   <h2>Reference implementation: Nitro sandboxes on Amazon EKS</h2>
   <table>
     <thead><tr><th scope="col">Layer</th><th scope="col">Open source component</th><th scope="col">In a Nitro sandbox</th></tr></thead>
@@ -895,7 +911,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 19 -->
-<section class="slide" data-who="Carlos" aria-label="Slide 19 of 20: Call to action">
+<section class="slide" data-who="Carlos" aria-label="Slide 19 of 21: Call to action">
   <h2>Start with a blueprint this afternoon</h2>
   <div class="cta">
     <div>
@@ -930,7 +946,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 20 -->
-<section class="slide title-slide" data-who="Carlos + co" aria-label="Slide 20 of 20: Thank you">
+<section class="slide title-slide" data-who="Carlos + co" aria-label="Slide 20 of 21: Thank you">
   <h1>Thank you</h1>
   <p class="muted big">Every agent its own kernel. One line on a pod spec.<br>Policy enforced inside the boundary, verified from outside.</p>
   <p style="margin-top:1rem"><span class="pill">github.com/aws-samples/sample-eks-nitro-sandbox</span><span class="pill">kubernetes-sigs/agent-sandbox</span><span class="pill">cedarpolicy.com</span></p>
@@ -946,7 +962,40 @@ route:   <span class="hl">none</span></pre>
   </div>
   <aside class="notes">
     <p>Thank you. <span class="duo">We are both</span><span class="solo-only">I am</span> around the AWS booth after this for questions and to walk through any blueprint.</p>
-    <p><i>If time remains:</i> take one or two questions from the floor.</p>
+    <p><i>If time remains:</i> take one or two questions from the floor. <i>Then:</i> the last slide stays up: workshops and Agents After Hours.</p>
+  </aside>
+</section>
+
+<!-- 21 -->
+<section class="slide promo" data-who="Carlos + co" aria-label="Slide 21 of 21: Workshops and Agents After Hours">
+  <div class="panel light">
+    <p class="kicker">Hands-on EKS workshops</p>
+    <h2>Keep<br>building.</h2>
+    <p class="sub">Live workshops. Real labs.</p>
+    <div class="row">
+      <img src="workshops-qr.svg" alt="QR code linking to awsworkshop.io/eks">
+      <p><b>Find your next workshop.</b></p>
+    </div>
+    <p class="url">awsworkshop.io/eks</p>
+    <p class="fine">&copy; 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.</p>
+  </div>
+  <div class="panel dark">
+    <p class="kicker">Happy hour + fireside chat</p>
+    <h2>Agents<br>After Hours</h2>
+    <p class="sub">Wed, Nov 11 &middot; 6&ndash;8 PM MST</p>
+    <div class="row">
+      <img src="after-hours-qr.svg" alt="QR code linking to s12d.com/agents-after-hours">
+      <p><b>Le M&eacute;ridien</b>Salt Lake City Downtown<span class="meta" style="display:block"><b style="font-size:1.9rem;margin:0">AWS &middot; NVIDIA &middot; Solo.io</b>Agentic AI on Kubernetes</span></p>
+    </div>
+    <p class="url">s12d.com/agents-after-hours</p>
+    <p class="fine">KubeCon + CloudNativeCon NA 2026</p>
+  </div>
+  <aside class="notes">
+    <p>Leave this up while people pack up and come forward.</p>
+    <ul>
+      <li><b>Left:</b> the EKS workshop catalog, hands-on labs you can run after the show.</li>
+      <li><b>Right:</b> <b>Agents After Hours</b>, Wednesday 6 to 8 PM at Le M&eacute;ridien downtown, with NVIDIA and Solo.io. Happy hour and a fireside chat on agentic AI on Kubernetes. Scan to register.</li>
+    </ul>
   </aside>
 </section>
 
@@ -1032,6 +1081,7 @@ route:   <span class="hl">none</span></pre>
 
   function show(n, remote) {
     i = clamp(n);
+    document.body.classList.toggle('on-promo', slides[i].classList.contains('promo'));
     slides.forEach((s, k) => {
       s.classList.toggle('active', k === i);
       s.setAttribute('aria-hidden', k === i ? 'false' : 'true');
@@ -1123,7 +1173,7 @@ route:   <span class="hl">none</span></pre>
         '<div class="pv-next">' +
           '<div class="pv-frame nxt"><iframe title="Next slide" tabindex="-1"></iframe><div class="pv-end" hidden>End of deck</div></div>' +
           '<div><div class="pv-label">Next</div><div class="pv-next-title"></div>' +
-          '<p class="pv-keys">&larr; &rarr; move &middot; t reset timer &middot; + / &minus; notes size &middot; 20 min total, about 1 min a slide</p></div>' +
+          '<p class="pv-keys">&larr; &rarr; move &middot; t reset timer &middot; + / &minus; notes size &middot; 20 min total, about 1 min a slide; the last slide stays up</p></div>' +
         '</div>' +
       '</div>' +
       '<div class="pv-notes" aria-live="polite" aria-label="Speaker notes"></div>';

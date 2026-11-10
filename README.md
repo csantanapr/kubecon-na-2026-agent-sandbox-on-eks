@@ -5,7 +5,7 @@ Carlos Santana and Todd Neal, AWS.
 
 ## Slides
 
-`slides/index.html` is a single self-contained HTML deck: 20 slides, speaker notes, and a
+`slides/index.html` is a single self-contained HTML deck: 21 slides, speaker notes, and a
 presenter view. Open it in a browser; no server is needed.
 
 | Key | Does |
@@ -32,11 +32,13 @@ line above the title.
 
 Slides 1 to 10 are Carlos (why, the Kubernetes-native shape, demo); 11 to 18 are the
 co-presenter, or Carlos when solo (RuntimeClass, containerd, the confidential use case, Cedar, attestation, the
-reference implementation); 19 and 20 are the blueprints call to action and thanks.
+reference implementation); 19 and 20 are the blueprints call to action and thanks; 21 is the
+EKS workshops and Agents After Hours promo that stays up after the talk.
 
 ## Files
 
 - `slides/index.html`: the deck.
 - `slides/carlos-santana.jpg`, `slides/todd-neal.jpg`, `slides/aaresh-sharma.jpg`: speaker photos.
 - `slides/sandboxing-how-it-works.png`: the slide 11 architecture diagram.
-- `slides/blueprints-qr.svg`: QR code for <https://github.com/aws-samples/sample-eks-nitro-sandbox>.
+- `slides/blueprints-qr.svg`, `slides/workshops-qr.svg`, `slides/after-hours-qr.svg`: QR codes for
+  the blueprints repository, <https://awsworkshop.io/eks> and <https://s12d.com/agents-after-hours>.
