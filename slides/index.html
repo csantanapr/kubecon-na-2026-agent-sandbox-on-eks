@@ -86,8 +86,10 @@
   .qr { margin: 0; text-align: center; }
   .qr img { width: 360px; height: 360px; display: block; border-radius: 12px; background: #fff; }
   .qr figcaption { margin-top: .8rem; font-size: 1.5rem; line-height: 1.4; color: var(--ink); }
-  .foot { position: fixed; bottom: 2.2vh; left: 6vw; right: 6vw; display: flex; justify-content: space-between;
+  .foot { position: fixed; bottom: 2.2vh; left: 6vw; right: 6vw; display: flex; justify-content: space-between; align-items: center;
     color: var(--muted); font-size: 1.1rem; pointer-events: none; }
+  .foot .legal { display: inline-flex; align-items: center; gap: .9rem; font-size: .85rem; letter-spacing: .01em; }
+  .foot .aws-logo { width: 46px; height: 28px; flex: none; }
   a { color: var(--blue); }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
@@ -1007,7 +1009,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 </div>
-<div class="foot"><span>Agent Sandbox on EKS: Hardware-Isolated microVM Pods for AI Agents</span><span id="pageno" aria-live="polite"></span></div>
+<div class="foot"><span class="legal"><svg class="aws-logo" viewBox="0 0 64 38" aria-hidden="true" focusable="false"><text x="1" y="21" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="-.5" fill="#ffffff">aws</text><path d="M3 29c13 7 32 8 50 0" fill="none" stroke="#ff9900" stroke-width="2.6" stroke-linecap="round"/><path d="M46 25.5l7.5 2.5-4 5" fill="none" stroke="#ff9900" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>&copy; 2026, Amazon Web Services, Inc. or its affiliates. All rights reserved.</span></span><span id="pageno" aria-live="polite"></span></div>
 
 <dialog class="help" id="help" aria-labelledby="help-title">
   <div class="box">
