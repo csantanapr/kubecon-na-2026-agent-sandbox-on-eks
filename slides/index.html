@@ -7,13 +7,20 @@
 <meta name="description" content="KubeCon NA 2026. Carlos Santana, with Todd Neal or Aaresh Sharma, AWS.">
 <style>
   :root {
-    --bg: #0f1419; --panel: #161d26; --ink: #e8edf2; --muted: #a7b3bf;
-    --accent: #ff9900; --blue: #4aa3ff; --green: #3ecf8e; --red: #ff6b6b; --violet: #b18cff;
-    --line: #2a3542; --code: #0b1016;
+    /* AWS at KubeCon NA 2026 palette, sampled from the event template: navy base, purple edge. */
+    --bg: #072a45; --bg2: #0c3870; --edge: #4351d2; --edge2: #8c1fc4;
+    --panel: #0f3a66; --ink: #eceaff; --muted: #b3bddc;
+    --accent: #ff9900; --blue: #7aa7ff; --green: #4fd9a0; --red: #ff7b7b; --violet: #b99cff;
+    --line: #2b5a8a; --code: #041f36;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+  html, body { margin: 0; height: 100%; color: var(--ink);
     font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif; }
+  body { background:
+      radial-gradient(ellipse 60% 80% at 100% 100%, rgba(140, 31, 196, .55), transparent 70%),
+      radial-gradient(ellipse 45% 60% at 100% 0%, rgba(67, 81, 210, .35), transparent 70%),
+      linear-gradient(160deg, var(--bg) 0%, var(--bg2) 100%);
+    background-attachment: fixed; }
   .deck { height: 100%; }
   section.slide { display: none; height: 100vh; padding: 5vh 6vw 7vh; flex-direction: column; }
   section.slide.active { display: flex; }
@@ -62,10 +69,10 @@
   .half { font-size: 1.15rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 .3em; }
   .fill { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; }
   .fill svg { width: 100%; height: 100%; max-height: 72vh; }
-  .fill img.diagram { max-width: 100%; max-height: 74vh; width: auto; height: auto; border-radius: 10px; }
+  .fill img.diagram { max-width: 100%; max-height: 74vh; width: auto; height: auto; border-radius: 10px; border: 1px solid var(--line); }
   svg text { font-family: inherit; }
   .caption { color: var(--muted); font-size: 1.7rem; margin: .6rem 0 0; text-align: center; }
-  .terminal { background: #05080b; border-radius: 12px; border: 1px solid var(--line); padding: 1rem 1.3rem;
+  .terminal { background: #041f36; border-radius: 12px; border: 1px solid var(--line); padding: 1rem 1.3rem;
     font-family: "JetBrains Mono", Menlo, monospace; font-size: 1.6rem; line-height: 1.5; white-space: pre; overflow: auto; margin: 0; }
   .terminal .p { color: var(--green); } .terminal .d { color: var(--muted); } .terminal .hl { color: var(--accent); font-weight: 700; }
   /* Demo slide: a simulated macOS Terminal window. Space types and runs the next command. */
@@ -86,7 +93,7 @@
 
   /* Notes: hidden in the deck, shown at the bottom with "n", and in the presenter view. */
   .notes { display: none; position: fixed; bottom: 0; left: 0; right: 0; max-height: 36vh; overflow: auto;
-    background: #1d2733; border-top: 2px solid var(--accent); padding: 1rem 6vw; font-size: 1.15rem; color: var(--ink); }
+    background: #0b2f52; border-top: 2px solid var(--accent); padding: 1rem 6vw; font-size: 1.15rem; color: var(--ink); }
   body.show-notes .slide.active .notes { display: block; }
   body.show-notes .foot { display: none; }
   .notes p, .notes li { font-size: inherit; line-height: 1.5; }
@@ -95,7 +102,7 @@
   .notes code { background: var(--code); padding: .05em .35em; border-radius: 6px; font-size: .9em; }
 
   /* Presenter view: index.html?presenter, opened from the deck with "p". */
-  body.presenter { overflow: hidden; }
+  body.presenter { overflow: hidden; background: var(--bg); }
   body.presenter .deck, body.presenter .foot { display: none; }
   body.embed { overflow: hidden; cursor: default; }
   .pv { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);
@@ -140,7 +147,7 @@
   section.slide.promo { padding: 0; flex-direction: row; }
   .promo .panel { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 6vh 5vw 8vh; min-width: 0; }
   .promo .panel.light { background: linear-gradient(160deg, #ece6fb 0%, #d9d2f7 100%); color: #15171f; }
-  .promo .panel.dark { background: linear-gradient(135deg, #0c2a40 0%, #123c5e 55%, #5a2ea6 100%); color: #fff; }
+  .promo .panel.dark { background: linear-gradient(135deg, #013b5e 0%, #103c81 55%, #8c1fc4 100%); color: #fff; }
   .promo .kicker { font-size: 1.25rem; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 1.2rem; opacity: .85; }
   .promo h2 { font-size: 5.2rem; line-height: 1.02; margin: 0 0 1.2rem; letter-spacing: -.02em; }
   .promo .sub { font-size: 2.1rem; margin: 0 0 2.2rem; opacity: .9; }
@@ -190,32 +197,32 @@
   <h2>Agents now write and run their own code</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 500" role="img" aria-label="An agent loop generates code, which runs as a container on the same node and the same Linux kernel as the payments and user services.">
-      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
       <!-- agent loop -->
-      <rect x="40" y="110" width="280" height="250" rx="16" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
-      <text x="180" y="150" text-anchor="middle" fill="#e8edf2" font-size="30" font-weight="700">Agent loop</text>
-      <text x="190" y="200" text-anchor="middle" fill="#a7b3bf" font-size="25">model reasons</text>
-      <text x="190" y="240" text-anchor="middle" fill="#a7b3bf" font-size="25">writes code</text>
-      <text x="190" y="280" text-anchor="middle" fill="#a7b3bf" font-size="25">runs it</text>
-      <text x="190" y="320" text-anchor="middle" fill="#a7b3bf" font-size="25">repeats</text>
+      <rect x="40" y="110" width="280" height="250" rx="16" fill="#0f3a66" stroke="#7aa7ff" stroke-width="2"/>
+      <text x="180" y="150" text-anchor="middle" fill="#eceaff" font-size="30" font-weight="700">Agent loop</text>
+      <text x="190" y="200" text-anchor="middle" fill="#b3bddc" font-size="25">model reasons</text>
+      <text x="190" y="240" text-anchor="middle" fill="#b3bddc" font-size="25">writes code</text>
+      <text x="190" y="280" text-anchor="middle" fill="#b3bddc" font-size="25">runs it</text>
+      <text x="190" y="320" text-anchor="middle" fill="#b3bddc" font-size="25">repeats</text>
       <path d="M320 235 L490 235" stroke="#a7b3bf" stroke-width="3" marker-end="url(#a)"/>
       <text x="405" y="200" text-anchor="middle" fill="#ff9900" font-size="21">model-generated</text>
       <text x="405" y="222" text-anchor="middle" fill="#ff9900" font-size="21">code</text>
       <!-- node -->
-      <rect x="500" y="60" width="660" height="400" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <text x="525" y="98" fill="#a7b3bf" font-size="25">Kubernetes node</text>
-      <rect x="530" y="130" width="180" height="190" rx="12" fill="#2b1b0e" stroke="#ff9900" stroke-width="2"/>
+      <rect x="500" y="60" width="660" height="400" rx="16" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="525" y="98" fill="#b3bddc" font-size="25">Kubernetes node</text>
+      <rect x="530" y="130" width="180" height="190" rx="12" fill="#4a2e0a" stroke="#ff9900" stroke-width="2"/>
       <text x="620" y="200" text-anchor="middle" fill="#ff9900" font-size="25" font-weight="700">generated</text>
       <text x="620" y="230" text-anchor="middle" fill="#ff9900" font-size="25" font-weight="700">code</text>
-      <text x="620" y="275" text-anchor="middle" fill="#a7b3bf" font-size="21">untrusted</text>
-      <rect x="740" y="130" width="180" height="190" rx="12" fill="#0f1419" stroke="#2a3542" stroke-width="2"/>
-      <text x="830" y="215" text-anchor="middle" fill="#e8edf2" font-size="25">payments</text>
-      <text x="830" y="275" text-anchor="middle" fill="#a7b3bf" font-size="21">production</text>
-      <rect x="950" y="130" width="180" height="190" rx="12" fill="#0f1419" stroke="#2a3542" stroke-width="2"/>
-      <text x="1040" y="215" text-anchor="middle" fill="#e8edf2" font-size="25">user data</text>
-      <text x="1040" y="275" text-anchor="middle" fill="#a7b3bf" font-size="21">production</text>
-      <rect x="530" y="350" width="600" height="70" rx="12" fill="#3a1a1a" stroke="#ff6b6b" stroke-width="2"/>
-      <text x="830" y="394" text-anchor="middle" fill="#ff6b6b" font-size="28" font-weight="700">one shared Linux kernel</text>
+      <text x="620" y="275" text-anchor="middle" fill="#b3bddc" font-size="21">untrusted</text>
+      <rect x="740" y="130" width="180" height="190" rx="12" fill="#072a45" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="830" y="215" text-anchor="middle" fill="#eceaff" font-size="25">payments</text>
+      <text x="830" y="275" text-anchor="middle" fill="#b3bddc" font-size="21">production</text>
+      <rect x="950" y="130" width="180" height="190" rx="12" fill="#072a45" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="1040" y="215" text-anchor="middle" fill="#eceaff" font-size="25">user data</text>
+      <text x="1040" y="275" text-anchor="middle" fill="#b3bddc" font-size="21">production</text>
+      <rect x="530" y="350" width="600" height="70" rx="12" fill="#4a1f2e" stroke="#ff7b7b" stroke-width="2"/>
+      <text x="830" y="394" text-anchor="middle" fill="#ff7b7b" font-size="28" font-weight="700">one shared Linux kernel</text>
     </svg>
   </div>
   <p class="caption">Model-generated code is untrusted code, and today it often lands next to your production services.</p>
@@ -234,25 +241,25 @@
   <h2>Separate reasoning from execution</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 500" role="img" aria-label="A control plane that runs the agentic loop sends work to a sandbox inside your own cluster; the boundary around the sandbox is highlighted with the question: how strong is it?">
-      <defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
-      <rect x="40" y="90" width="420" height="320" rx="16" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
-      <text x="250" y="135" text-anchor="middle" fill="#4aa3ff" font-size="30" font-weight="700">Control plane: reasoning</text>
-      <text x="250" y="185" text-anchor="middle" fill="#e8edf2" font-size="25">the agentic loop</text>
-      <text x="250" y="222" text-anchor="middle" fill="#a7b3bf" font-size="23">model calls, planning, tools</text>
-      <text x="250" y="259" text-anchor="middle" fill="#a7b3bf" font-size="23">a managed service or your driver</text>
-      <text x="250" y="330" text-anchor="middle" fill="#a7b3bf" font-size="23">holds no production credentials</text>
-      <text x="250" y="365" text-anchor="middle" fill="#a7b3bf" font-size="23">never runs the code</text>
+      <defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
+      <rect x="40" y="90" width="420" height="320" rx="16" fill="#0f3a66" stroke="#7aa7ff" stroke-width="2"/>
+      <text x="250" y="135" text-anchor="middle" fill="#7aa7ff" font-size="30" font-weight="700">Control plane: reasoning</text>
+      <text x="250" y="185" text-anchor="middle" fill="#eceaff" font-size="25">the agentic loop</text>
+      <text x="250" y="222" text-anchor="middle" fill="#b3bddc" font-size="23">model calls, planning, tools</text>
+      <text x="250" y="259" text-anchor="middle" fill="#b3bddc" font-size="23">a managed service or your driver</text>
+      <text x="250" y="330" text-anchor="middle" fill="#b3bddc" font-size="23">holds no production credentials</text>
+      <text x="250" y="365" text-anchor="middle" fill="#b3bddc" font-size="23">never runs the code</text>
       <path d="M460 230 L690 230" stroke="#a7b3bf" stroke-width="3" marker-end="url(#b)"/>
-      <text x="575" y="215" text-anchor="middle" fill="#e8edf2" font-size="23">run this</text>
+      <text x="575" y="215" text-anchor="middle" fill="#eceaff" font-size="23">run this</text>
       <path d="M690 275 L460 275" stroke="#a7b3bf" stroke-width="3" marker-end="url(#b)"/>
-      <text x="575" y="305" text-anchor="middle" fill="#e8edf2" font-size="23">result</text>
-      <rect x="700" y="60" width="460" height="380" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <text x="930" y="100" text-anchor="middle" fill="#a7b3bf" font-size="25">Your cluster: execution</text>
-      <rect x="760" y="130" width="340" height="250" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="5" stroke-dasharray="14 10"/>
-      <text x="930" y="200" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">sandbox</text>
-      <text x="930" y="240" text-anchor="middle" fill="#a7b3bf" font-size="23">runs the generated code</text>
-      <text x="930" y="275" text-anchor="middle" fill="#a7b3bf" font-size="23">your network, your data</text>
-      <text x="930" y="310" text-anchor="middle" fill="#a7b3bf" font-size="23">your identity model</text>
+      <text x="575" y="305" text-anchor="middle" fill="#eceaff" font-size="23">result</text>
+      <rect x="700" y="60" width="460" height="380" rx="16" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="930" y="100" text-anchor="middle" fill="#b3bddc" font-size="25">Your cluster: execution</text>
+      <rect x="760" y="130" width="340" height="250" rx="14" fill="#072a45" stroke="#ff9900" stroke-width="5" stroke-dasharray="14 10"/>
+      <text x="930" y="200" text-anchor="middle" fill="#eceaff" font-size="28" font-weight="700">sandbox</text>
+      <text x="930" y="240" text-anchor="middle" fill="#b3bddc" font-size="23">runs the generated code</text>
+      <text x="930" y="275" text-anchor="middle" fill="#b3bddc" font-size="23">your network, your data</text>
+      <text x="930" y="310" text-anchor="middle" fill="#b3bddc" font-size="23">your identity model</text>
       <text x="930" y="420" text-anchor="middle" fill="#ff9900" font-size="30" font-weight="700">how strong is this boundary?</text>
     </svg>
   </div>
@@ -272,40 +279,40 @@
   <div class="fill">
     <svg viewBox="0 0 1200 500" role="img" aria-label="Four columns: containers on a shared kernel; a userspace kernel that intercepts syscalls, soft isolation; a VM with its own guest kernel, VM isolation; and a hardware-isolated microVM where the Nitro hypervisor enforces CPU and memory isolation, hardware isolation.">
       <g>
-        <rect x="30" y="40" width="270" height="420" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-        <text x="165" y="85" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">Container</text>
-        <rect x="50" y="130" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="165" y="168" text-anchor="middle" fill="#e8edf2" font-size="23">process</text>
-        <rect x="50" y="210" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="165" y="248" text-anchor="middle" fill="#a7b3bf" font-size="20">namespaces, cgroups</text>
-        <rect x="50" y="330" width="230" height="60" rx="10" fill="#3a1a1a" stroke="#ff6b6b"/><text x="165" y="368" text-anchor="middle" fill="#ff6b6b" font-size="23">node kernel</text>
-        <text x="165" y="435" text-anchor="middle" fill="#a7b3bf" font-size="22">shared kernel</text>
+        <rect x="30" y="40" width="270" height="420" rx="16" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+        <text x="165" y="85" text-anchor="middle" fill="#eceaff" font-size="28" font-weight="700">Container</text>
+        <rect x="50" y="130" width="230" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="165" y="168" text-anchor="middle" fill="#eceaff" font-size="23">process</text>
+        <rect x="50" y="210" width="230" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="165" y="248" text-anchor="middle" fill="#b3bddc" font-size="20">namespaces, cgroups</text>
+        <rect x="50" y="330" width="230" height="60" rx="10" fill="#4a1f2e" stroke="#ff7b7b"/><text x="165" y="368" text-anchor="middle" fill="#ff7b7b" font-size="23">node kernel</text>
+        <text x="165" y="435" text-anchor="middle" fill="#b3bddc" font-size="22">shared kernel</text>
       </g>
       <g>
-        <rect x="320" y="40" width="270" height="420" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-        <text x="455" y="85" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">Userspace kernel</text>
-        <rect x="340" y="130" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="455" y="168" text-anchor="middle" fill="#e8edf2" font-size="23">process</text>
-        <rect x="340" y="210" width="230" height="60" rx="10" fill="#1a2a3a" stroke="#4aa3ff"/><text x="455" y="248" text-anchor="middle" fill="#4aa3ff" font-size="20">syscall interception</text>
-        <rect x="340" y="330" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="455" y="368" text-anchor="middle" fill="#a7b3bf" font-size="23">node kernel</text>
-        <text x="455" y="435" text-anchor="middle" fill="#a7b3bf" font-size="22">soft isolation, e.g. gVisor</text>
+        <rect x="320" y="40" width="270" height="420" rx="16" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+        <text x="455" y="85" text-anchor="middle" fill="#eceaff" font-size="28" font-weight="700">Userspace kernel</text>
+        <rect x="340" y="130" width="230" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="455" y="168" text-anchor="middle" fill="#eceaff" font-size="23">process</text>
+        <rect x="340" y="210" width="230" height="60" rx="10" fill="#153f7a" stroke="#7aa7ff"/><text x="455" y="248" text-anchor="middle" fill="#7aa7ff" font-size="20">syscall interception</text>
+        <rect x="340" y="330" width="230" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="455" y="368" text-anchor="middle" fill="#b3bddc" font-size="23">node kernel</text>
+        <text x="455" y="435" text-anchor="middle" fill="#b3bddc" font-size="22">soft isolation, e.g. gVisor</text>
       </g>
       <g>
-        <rect x="610" y="40" width="270" height="420" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-        <text x="745" y="85" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">VM</text>
-        <rect x="630" y="130" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="745" y="168" text-anchor="middle" fill="#e8edf2" font-size="23">process</text>
-        <rect x="630" y="210" width="230" height="60" rx="10" fill="#1a3a2a" stroke="#3ecf8e"/><text x="745" y="248" text-anchor="middle" fill="#3ecf8e" font-size="23">guest kernel</text>
-        <rect x="630" y="290" width="230" height="40" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="745" y="318" text-anchor="middle" fill="#a7b3bf" font-size="21">VMM on the node</text>
-        <rect x="630" y="350" width="230" height="40" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="745" y="378" text-anchor="middle" fill="#a7b3bf" font-size="21">node kernel, KVM</text>
-        <text x="745" y="435" text-anchor="middle" fill="#a7b3bf" font-size="22">VM isolation, e.g. Kata</text>
+        <rect x="610" y="40" width="270" height="420" rx="16" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+        <text x="745" y="85" text-anchor="middle" fill="#eceaff" font-size="28" font-weight="700">VM</text>
+        <rect x="630" y="130" width="230" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="745" y="168" text-anchor="middle" fill="#eceaff" font-size="23">process</text>
+        <rect x="630" y="210" width="230" height="60" rx="10" fill="#0f4a4a" stroke="#4fd9a0"/><text x="745" y="248" text-anchor="middle" fill="#4fd9a0" font-size="23">guest kernel</text>
+        <rect x="630" y="290" width="230" height="40" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="745" y="318" text-anchor="middle" fill="#b3bddc" font-size="21">VMM on the node</text>
+        <rect x="630" y="350" width="230" height="40" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="745" y="378" text-anchor="middle" fill="#b3bddc" font-size="21">node kernel, KVM</text>
+        <text x="745" y="435" text-anchor="middle" fill="#b3bddc" font-size="22">VM isolation, e.g. Kata</text>
       </g>
       <g>
-        <rect x="900" y="40" width="270" height="420" rx="16" fill="#161d26" stroke="#ff9900" stroke-width="3"/>
+        <rect x="900" y="40" width="270" height="420" rx="16" fill="#0f3a66" stroke="#ff9900" stroke-width="3"/>
         <text x="1035" y="85" text-anchor="middle" fill="#ff9900" font-size="28" font-weight="700">Hardware-isolated</text>
-        <rect x="920" y="130" width="230" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="1035" y="168" text-anchor="middle" fill="#e8edf2" font-size="23">process</text>
-        <rect x="920" y="210" width="230" height="60" rx="10" fill="#1a3a2a" stroke="#3ecf8e"/><text x="1035" y="248" text-anchor="middle" fill="#3ecf8e" font-size="23">guest kernel</text>
-        <rect x="920" y="290" width="230" height="100" rx="10" fill="#2b1b0e" stroke="#ff9900"/>
+        <rect x="920" y="130" width="230" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="1035" y="168" text-anchor="middle" fill="#eceaff" font-size="23">process</text>
+        <rect x="920" y="210" width="230" height="60" rx="10" fill="#0f4a4a" stroke="#4fd9a0"/><text x="1035" y="248" text-anchor="middle" fill="#4fd9a0" font-size="23">guest kernel</text>
+        <rect x="920" y="290" width="230" height="100" rx="10" fill="#4a2e0a" stroke="#ff9900"/>
         <text x="1035" y="330" text-anchor="middle" fill="#ff9900" font-size="22">Nitro hypervisor</text>
         <text x="1035" y="360" text-anchor="middle" fill="#ff9900" font-size="20">first-level guest</text>
-        <text x="1035" y="425" text-anchor="middle" fill="#a7b3bf" font-size="22">hardware isolation</text>
-        <text x="1035" y="447" text-anchor="middle" fill="#a7b3bf" font-size="22">Nitro sandbox</text>
+        <text x="1035" y="425" text-anchor="middle" fill="#b3bddc" font-size="22">hardware isolation</text>
+        <text x="1035" y="447" text-anchor="middle" fill="#b3bddc" font-size="22">Nitro sandbox</text>
       </g>
     </svg>
   </div>
@@ -327,38 +334,38 @@
   <h2>Give every agent its own kernel</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 500" role="img" aria-label="Inside an EKS node, kubelet and containerd see an ordinary pod. Pods with a runtimeClassName of isolated-sandbox each run inside their own Nitro sandbox with its own kernel; regular pods keep sharing the node kernel.">
-      <defs><marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
-      <rect x="30" y="30" width="1140" height="440" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <text x="55" y="68" fill="#a7b3bf" font-size="25">EKS node (EC2 instance)</text>
-      <rect x="55" y="100" width="230" height="320" rx="12" fill="#0f1419" stroke="#2a3542"/>
-      <text x="170" y="150" text-anchor="middle" fill="#e8edf2" font-size="25" font-weight="700">kubelet</text>
-      <text x="170" y="200" text-anchor="middle" fill="#e8edf2" font-size="25" font-weight="700">containerd</text>
-      <text x="170" y="260" text-anchor="middle" fill="#a7b3bf" font-size="21">scheduling, volumes,</text>
-      <text x="170" y="286" text-anchor="middle" fill="#a7b3bf" font-size="21">VPC IP, exec, logs,</text>
-      <text x="170" y="312" text-anchor="middle" fill="#a7b3bf" font-size="21">port-forward</text>
-      <text x="170" y="380" text-anchor="middle" fill="#a7b3bf" font-size="21">sees an ordinary pod</text>
+      <defs><marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
+      <rect x="30" y="30" width="1140" height="440" rx="16" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="55" y="68" fill="#b3bddc" font-size="25">EKS node (EC2 instance)</text>
+      <rect x="55" y="100" width="230" height="320" rx="12" fill="#072a45" stroke="#2b5a8a"/>
+      <text x="170" y="150" text-anchor="middle" fill="#eceaff" font-size="25" font-weight="700">kubelet</text>
+      <text x="170" y="200" text-anchor="middle" fill="#eceaff" font-size="25" font-weight="700">containerd</text>
+      <text x="170" y="260" text-anchor="middle" fill="#b3bddc" font-size="21">scheduling, volumes,</text>
+      <text x="170" y="286" text-anchor="middle" fill="#b3bddc" font-size="21">VPC IP, exec, logs,</text>
+      <text x="170" y="312" text-anchor="middle" fill="#b3bddc" font-size="21">port-forward</text>
+      <text x="170" y="380" text-anchor="middle" fill="#b3bddc" font-size="21">sees an ordinary pod</text>
       <path d="M285 180 L330 180" stroke="#a7b3bf" stroke-width="3" marker-end="url(#c)"/>
       <path d="M285 180 L310 180 L310 330 L330 330" fill="none" stroke="#a7b3bf" stroke-width="3" marker-end="url(#c)"/>
       <!-- sandbox 1 -->
-      <rect x="340" y="100" width="400" height="200" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <rect x="340" y="100" width="400" height="200" rx="14" fill="#072a45" stroke="#ff9900" stroke-width="4"/>
       <text x="360" y="132" fill="#ff9900" font-size="23" font-weight="700">Nitro sandbox</text>
-      <text x="725" y="132" text-anchor="end" fill="#a7b3bf" font-size="20">this pod only</text>
-      <rect x="360" y="150" width="175" height="56" rx="8" fill="#161d26" stroke="#2a3542"/><text x="447" y="185" text-anchor="middle" fill="#e8edf2" font-size="21">agent container</text>
-      <rect x="545" y="150" width="175" height="56" rx="8" fill="#161d26" stroke="#2a3542"/><text x="632" y="185" text-anchor="middle" fill="#a7b3bf" font-size="21">same image</text>
-      <rect x="360" y="226" width="360" height="50" rx="8" fill="#1a3a2a" stroke="#3ecf8e"/><text x="540" y="258" text-anchor="middle" fill="#3ecf8e" font-size="23" font-weight="700">its own Linux kernel</text>
+      <text x="725" y="132" text-anchor="end" fill="#b3bddc" font-size="20">this pod only</text>
+      <rect x="360" y="150" width="175" height="56" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="447" y="185" text-anchor="middle" fill="#eceaff" font-size="21">agent container</text>
+      <rect x="545" y="150" width="175" height="56" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="632" y="185" text-anchor="middle" fill="#b3bddc" font-size="21">same image</text>
+      <rect x="360" y="226" width="360" height="50" rx="8" fill="#0f4a4a" stroke="#4fd9a0"/><text x="540" y="258" text-anchor="middle" fill="#4fd9a0" font-size="23" font-weight="700">its own Linux kernel</text>
       <!-- sandbox 2 -->
-      <rect x="340" y="320" width="400" height="100" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <rect x="340" y="320" width="400" height="100" rx="14" fill="#072a45" stroke="#ff9900" stroke-width="4"/>
       <text x="360" y="352" fill="#ff9900" font-size="23" font-weight="700">Nitro sandbox</text>
-      <text x="725" y="352" text-anchor="end" fill="#a7b3bf" font-size="20">another session</text>
-      <rect x="360" y="368" width="360" height="40" rx="8" fill="#1a3a2a" stroke="#3ecf8e"/><text x="540" y="395" text-anchor="middle" fill="#3ecf8e" font-size="21">its own Linux kernel</text>
+      <text x="725" y="352" text-anchor="end" fill="#b3bddc" font-size="20">another session</text>
+      <rect x="360" y="368" width="360" height="40" rx="8" fill="#0f4a4a" stroke="#4fd9a0"/><text x="540" y="395" text-anchor="middle" fill="#4fd9a0" font-size="21">its own Linux kernel</text>
       <!-- regular pods -->
-      <rect x="780" y="100" width="360" height="320" rx="12" fill="#0f1419" stroke="#2a3542" stroke-dasharray="8 6"/>
-      <text x="960" y="135" text-anchor="middle" fill="#a7b3bf" font-size="23">regular pods</text>
-      <rect x="810" y="165" width="140" height="56" rx="8" fill="#161d26" stroke="#2a3542"/><text x="880" y="200" text-anchor="middle" fill="#e8edf2" font-size="21">payments</text>
-      <rect x="970" y="165" width="140" height="56" rx="8" fill="#161d26" stroke="#2a3542"/><text x="1040" y="200" text-anchor="middle" fill="#e8edf2" font-size="21">user data</text>
-      <rect x="810" y="250" width="300" height="50" rx="8" fill="#161d26" stroke="#2a3542"/><text x="960" y="282" text-anchor="middle" fill="#a7b3bf" font-size="21">share the node kernel</text>
-      <text x="960" y="370" text-anchor="middle" fill="#a7b3bf" font-size="19">the sandbox shares no kernel</text>
-      <text x="960" y="396" text-anchor="middle" fill="#a7b3bf" font-size="19">and no memory mapping with them</text>
+      <rect x="780" y="100" width="360" height="320" rx="12" fill="#072a45" stroke="#2b5a8a" stroke-dasharray="8 6"/>
+      <text x="960" y="135" text-anchor="middle" fill="#b3bddc" font-size="23">regular pods</text>
+      <rect x="810" y="165" width="140" height="56" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="880" y="200" text-anchor="middle" fill="#eceaff" font-size="21">payments</text>
+      <rect x="970" y="165" width="140" height="56" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="1040" y="200" text-anchor="middle" fill="#eceaff" font-size="21">user data</text>
+      <rect x="810" y="250" width="300" height="50" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="960" y="282" text-anchor="middle" fill="#b3bddc" font-size="21">share the node kernel</text>
+      <text x="960" y="370" text-anchor="middle" fill="#b3bddc" font-size="19">the sandbox shares no kernel</text>
+      <text x="960" y="396" text-anchor="middle" fill="#b3bddc" font-size="19">and no memory mapping with them</text>
     </svg>
   </div>
   <aside class="notes">
@@ -449,33 +456,33 @@ route:   <span class="hl">none</span></pre>
   <h2>agent-sandbox: pods as sessions <span class="tag">kubernetes-sigs</span></h2>
   <div class="fill">
     <svg viewBox="0 0 1200 480" role="img" aria-label="A SandboxTemplate carrying runtimeClassName isolated-sandbox feeds a SandboxWarmPool of pre-booted sandboxes. A SandboxClaim adopts one warm pod in under one second and the pool refills. A Sandbox resource gives one stateful pod with a persistent volume that can be suspended and resumed.">
-      <defs><marker id="d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
-      <rect x="30" y="60" width="300" height="200" rx="14" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
-      <text x="180" y="100" text-anchor="middle" fill="#4aa3ff" font-size="28" font-weight="700">SandboxTemplate</text>
-      <rect x="55" y="125" width="250" height="110" rx="10" fill="#0b1016" stroke="#2a3542"/>
-      <text x="70" y="158" fill="#a7b3bf" font-size="21" font-family="Menlo, monospace">podTemplate.spec:</text>
+      <defs><marker id="d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
+      <rect x="30" y="60" width="300" height="200" rx="14" fill="#0f3a66" stroke="#7aa7ff" stroke-width="2"/>
+      <text x="180" y="100" text-anchor="middle" fill="#7aa7ff" font-size="28" font-weight="700">SandboxTemplate</text>
+      <rect x="55" y="125" width="250" height="110" rx="10" fill="#0b1016" stroke="#2b5a8a"/>
+      <text x="70" y="158" fill="#b3bddc" font-size="21" font-family="Menlo, monospace">podTemplate.spec:</text>
       <text x="70" y="188" fill="#ff9900" font-size="21" font-family="Menlo, monospace">  runtimeClassName:</text>
       <text x="70" y="214" fill="#ff9900" font-size="21" font-family="Menlo, monospace">    isolated-sandbox</text>
       <path d="M330 160 L400 160" stroke="#a7b3bf" stroke-width="3" marker-end="url(#d)"/>
-      <rect x="410" y="40" width="400" height="240" rx="14" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <text x="610" y="80" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">SandboxWarmPool</text>
-      <text x="610" y="108" text-anchor="middle" fill="#a7b3bf" font-size="21">pre-booted, refills itself</text>
+      <rect x="410" y="40" width="400" height="240" rx="14" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="610" y="80" text-anchor="middle" fill="#eceaff" font-size="28" font-weight="700">SandboxWarmPool</text>
+      <text x="610" y="108" text-anchor="middle" fill="#b3bddc" font-size="21">pre-booted, refills itself</text>
       <g>
-        <rect x="440" y="130" width="100" height="120" rx="10" fill="#0f1419" stroke="#ff9900" stroke-width="3"/><text x="490" y="195" text-anchor="middle" fill="#3ecf8e" font-size="21">warm</text>
-        <rect x="560" y="130" width="100" height="120" rx="10" fill="#0f1419" stroke="#ff9900" stroke-width="3"/><text x="610" y="195" text-anchor="middle" fill="#3ecf8e" font-size="21">warm</text>
-        <rect x="680" y="130" width="100" height="120" rx="10" fill="#0f1419" stroke="#ff9900" stroke-width="3"/><text x="730" y="195" text-anchor="middle" fill="#3ecf8e" font-size="21">warm</text>
+        <rect x="440" y="130" width="100" height="120" rx="10" fill="#072a45" stroke="#ff9900" stroke-width="3"/><text x="490" y="195" text-anchor="middle" fill="#4fd9a0" font-size="21">warm</text>
+        <rect x="560" y="130" width="100" height="120" rx="10" fill="#072a45" stroke="#ff9900" stroke-width="3"/><text x="610" y="195" text-anchor="middle" fill="#4fd9a0" font-size="21">warm</text>
+        <rect x="680" y="130" width="100" height="120" rx="10" fill="#072a45" stroke="#ff9900" stroke-width="3"/><text x="730" y="195" text-anchor="middle" fill="#4fd9a0" font-size="21">warm</text>
       </g>
       <path d="M810 160 L880 160" stroke="#a7b3bf" stroke-width="3" marker-end="url(#d)"/>
-      <rect x="890" y="60" width="280" height="200" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
-      <text x="1030" y="100" text-anchor="middle" fill="#3ecf8e" font-size="28" font-weight="700">SandboxClaim</text>
-      <text x="1030" y="135" text-anchor="middle" fill="#a7b3bf" font-size="21">one per session or task</text>
-      <text x="1030" y="185" text-anchor="middle" fill="#e8edf2" font-size="25">adopts a warm pod</text>
+      <rect x="890" y="60" width="280" height="200" rx="14" fill="#0f3a66" stroke="#4fd9a0" stroke-width="2"/>
+      <text x="1030" y="100" text-anchor="middle" fill="#4fd9a0" font-size="28" font-weight="700">SandboxClaim</text>
+      <text x="1030" y="135" text-anchor="middle" fill="#b3bddc" font-size="21">one per session or task</text>
+      <text x="1030" y="185" text-anchor="middle" fill="#eceaff" font-size="25">adopts a warm pod</text>
       <text x="1030" y="225" text-anchor="middle" fill="#ff9900" font-size="30" font-weight="700">Ready in &lt; 1 s</text>
-      <rect x="30" y="310" width="1140" height="140" rx="14" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <text x="60" y="350" fill="#e8edf2" font-size="28" font-weight="700">Sandbox</text>
-      <text x="60" y="385" fill="#a7b3bf" font-size="22">one stateful pod with a stable identity and a persistent volume</text>
-      <text x="60" y="418" fill="#a7b3bf" font-size="22">operatingMode: Suspended frees the compute and keeps the volume; Running brings the workspace back</text>
-      <text x="1140" y="350" text-anchor="end" fill="#a7b3bf" font-size="21">agents.x-k8s.io</text>
+      <rect x="30" y="310" width="1140" height="140" rx="14" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="60" y="350" fill="#eceaff" font-size="28" font-weight="700">Sandbox</text>
+      <text x="60" y="385" fill="#b3bddc" font-size="22">one stateful pod with a stable identity and a persistent volume</text>
+      <text x="60" y="418" fill="#b3bddc" font-size="22">operatingMode: Suspended frees the compute and keeps the volume; Running brings the workspace back</text>
+      <text x="1140" y="350" text-anchor="end" fill="#b3bddc" font-size="21">agents.x-k8s.io</text>
     </svg>
   </div>
   <aside class="notes">
@@ -495,34 +502,34 @@ route:   <span class="hl">none</span></pre>
   <h2>Scoped egress, scoped credentials</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 480" role="img" aria-label="Inside the node, the sandbox's network interface connects to a host-side interface where eBPF network policy is enforced outside the guest; only allowed hosts are reachable. Credentials come from EKS Pod Identity: the pod's ServiceAccount maps to one IAM role scoped to what the agent needs, with no long-lived keys inside the guest.">
-      <defs><marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
-      <rect x="30" y="30" width="760" height="420" rx="16" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <text x="55" y="68" fill="#a7b3bf" font-size="25">EKS node</text>
-      <rect x="55" y="100" width="300" height="320" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <defs><marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
+      <rect x="30" y="30" width="760" height="420" rx="16" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="55" y="68" fill="#b3bddc" font-size="25">EKS node</text>
+      <rect x="55" y="100" width="300" height="320" rx="14" fill="#072a45" stroke="#ff9900" stroke-width="4"/>
       <text x="205" y="135" text-anchor="middle" fill="#ff9900" font-size="23" font-weight="700">Nitro sandbox</text>
-      <rect x="80" y="160" width="250" height="60" rx="8" fill="#161d26" stroke="#2a3542"/><text x="205" y="197" text-anchor="middle" fill="#e8edf2" font-size="22">agent code</text>
-      <rect x="80" y="240" width="250" height="50" rx="8" fill="#161d26" stroke="#2a3542"/><text x="205" y="272" text-anchor="middle" fill="#a7b3bf" font-size="21">eth0, VPC address</text>
-      <text x="205" y="340" text-anchor="middle" fill="#a7b3bf" font-size="20">cannot see or change</text>
-      <text x="205" y="364" text-anchor="middle" fill="#a7b3bf" font-size="20">anything to the right</text>
+      <rect x="80" y="160" width="250" height="60" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="205" y="197" text-anchor="middle" fill="#eceaff" font-size="22">agent code</text>
+      <rect x="80" y="240" width="250" height="50" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="205" y="272" text-anchor="middle" fill="#b3bddc" font-size="21">eth0, VPC address</text>
+      <text x="205" y="340" text-anchor="middle" fill="#b3bddc" font-size="20">cannot see or change</text>
+      <text x="205" y="364" text-anchor="middle" fill="#b3bddc" font-size="20">anything to the right</text>
       <path d="M355 265 L440 265" stroke="#a7b3bf" stroke-width="3" marker-end="url(#e)"/>
-      <rect x="450" y="200" width="310" height="130" rx="12" fill="#1a2a3a" stroke="#4aa3ff" stroke-width="2"/>
-      <text x="605" y="235" text-anchor="middle" fill="#4aa3ff" font-size="23" font-weight="700">host-side interface</text>
-      <text x="605" y="268" text-anchor="middle" fill="#e8edf2" font-size="22">eBPF network policy</text>
-      <text x="605" y="298" text-anchor="middle" fill="#a7b3bf" font-size="18">enforced outside the guest</text>
-      <rect x="450" y="350" width="310" height="70" rx="12" fill="#0f1419" stroke="#2a3542"/>
-      <text x="605" y="380" text-anchor="middle" fill="#e8edf2" font-size="22">Pod Identity agent</text>
-      <text x="605" y="405" text-anchor="middle" fill="#a7b3bf" font-size="18">short-lived credentials</text>
+      <rect x="450" y="200" width="310" height="130" rx="12" fill="#153f7a" stroke="#7aa7ff" stroke-width="2"/>
+      <text x="605" y="235" text-anchor="middle" fill="#7aa7ff" font-size="23" font-weight="700">host-side interface</text>
+      <text x="605" y="268" text-anchor="middle" fill="#eceaff" font-size="22">eBPF network policy</text>
+      <text x="605" y="298" text-anchor="middle" fill="#b3bddc" font-size="18">enforced outside the guest</text>
+      <rect x="450" y="350" width="310" height="70" rx="12" fill="#072a45" stroke="#2b5a8a"/>
+      <text x="605" y="380" text-anchor="middle" fill="#eceaff" font-size="22">Pod Identity agent</text>
+      <text x="605" y="405" text-anchor="middle" fill="#b3bddc" font-size="18">short-lived credentials</text>
       <path d="M760 265 L850 265" stroke="#a7b3bf" stroke-width="3" marker-end="url(#e)"/>
-      <rect x="860" y="60" width="310" height="180" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
-      <text x="1015" y="100" text-anchor="middle" fill="#3ecf8e" font-size="25" font-weight="700">allowed hosts only</text>
-      <text x="1015" y="140" text-anchor="middle" fill="#a7b3bf" font-size="21">model endpoint, git host,</text>
-      <text x="1015" y="168" text-anchor="middle" fill="#a7b3bf" font-size="21">CoreDNS, Pod Identity</text>
-      <text x="1015" y="210" text-anchor="middle" fill="#a7b3bf" font-size="18">by hostname with domainNames</text>
-      <rect x="860" y="270" width="310" height="180" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
-      <text x="1015" y="310" text-anchor="middle" fill="#3ecf8e" font-size="25" font-weight="700">one IAM role per agent</text>
-      <text x="1015" y="350" text-anchor="middle" fill="#a7b3bf" font-size="20">via EKS Pod Identity</text>
-      <text x="1015" y="380" text-anchor="middle" fill="#a7b3bf" font-size="21">scoped to its job</text>
-      <text x="1015" y="420" text-anchor="middle" fill="#a7b3bf" font-size="20">no long-lived keys in the guest</text>
+      <rect x="860" y="60" width="310" height="180" rx="14" fill="#0f3a66" stroke="#4fd9a0" stroke-width="2"/>
+      <text x="1015" y="100" text-anchor="middle" fill="#4fd9a0" font-size="25" font-weight="700">allowed hosts only</text>
+      <text x="1015" y="140" text-anchor="middle" fill="#b3bddc" font-size="21">model endpoint, git host,</text>
+      <text x="1015" y="168" text-anchor="middle" fill="#b3bddc" font-size="21">CoreDNS, Pod Identity</text>
+      <text x="1015" y="210" text-anchor="middle" fill="#b3bddc" font-size="18">by hostname with domainNames</text>
+      <rect x="860" y="270" width="310" height="180" rx="14" fill="#0f3a66" stroke="#4fd9a0" stroke-width="2"/>
+      <text x="1015" y="310" text-anchor="middle" fill="#4fd9a0" font-size="25" font-weight="700">one IAM role per agent</text>
+      <text x="1015" y="350" text-anchor="middle" fill="#b3bddc" font-size="20">via EKS Pod Identity</text>
+      <text x="1015" y="380" text-anchor="middle" fill="#b3bddc" font-size="21">scoped to its job</text>
+      <text x="1015" y="420" text-anchor="middle" fill="#b3bddc" font-size="20">no long-lived keys in the guest</text>
       <path d="M760 385 L850 385" stroke="#a7b3bf" stroke-width="3" marker-end="url(#e)"/>
     </svg>
   </div>
@@ -542,36 +549,36 @@ route:   <span class="hl">none</span></pre>
   <h2>Demo: pause an agent, resume it on another node <span class="tag">live</span></h2>
   <div class="fill">
     <svg viewBox="0 0 1200 440" role="img" aria-label="Three numbered steps. One: on node A, an agent pod in a Nitro sandbox works on a task; its workspace and session history are files on remote storage. Two: pause releases the pod and its compute; the files stay on remote storage. Three: resume brings the same pod up on node B, which mounts the same files, and the agent continues the task where it stopped.">
-      <defs><marker id="j" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <defs><marker id="j" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
       <!-- node A -->
-      <rect x="30" y="40" width="360" height="290" rx="14" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <circle cx="58" cy="68" r="18" fill="#4aa3ff"/><text x="58" y="75" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">1</text>
-      <text x="225" y="76" text-anchor="middle" fill="#e8edf2" font-size="26" font-weight="700">Node A</text>
-      <rect x="60" y="105" width="300" height="200" rx="12" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <rect x="30" y="40" width="360" height="290" rx="14" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <circle cx="58" cy="68" r="18" fill="#7aa7ff"/><text x="58" y="75" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">1</text>
+      <text x="225" y="76" text-anchor="middle" fill="#eceaff" font-size="26" font-weight="700">Node A</text>
+      <rect x="60" y="105" width="300" height="200" rx="12" fill="#072a45" stroke="#ff9900" stroke-width="4"/>
       <text x="210" y="140" text-anchor="middle" fill="#ff9900" font-size="22" font-weight="700">agent pod</text>
-      <rect x="85" y="160" width="250" height="52" rx="8" fill="#161d26" stroke="#2a3542"/><text x="210" y="194" text-anchor="middle" fill="#e8edf2" font-size="21">working on a task</text>
-      <rect x="85" y="228" width="250" height="52" rx="8" fill="#161d26" stroke="#2a3542"/><text x="210" y="262" text-anchor="middle" fill="#a7b3bf" font-size="20">writes its state to files</text>
+      <rect x="85" y="160" width="250" height="52" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="210" y="194" text-anchor="middle" fill="#eceaff" font-size="21">working on a task</text>
+      <rect x="85" y="228" width="250" height="52" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="210" y="262" text-anchor="middle" fill="#b3bddc" font-size="20">writes its state to files</text>
       <!-- pause -->
       <path d="M390 185 L450 185" stroke="#a7b3bf" stroke-width="3" marker-end="url(#j)"/>
-      <rect x="460" y="115" width="280" height="140" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
-      <circle cx="488" cy="143" r="18" fill="#3ecf8e"/><text x="488" y="150" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">2</text>
-      <text x="610" y="151" text-anchor="middle" fill="#3ecf8e" font-size="26" font-weight="700">pause</text>
-      <text x="600" y="193" text-anchor="middle" fill="#e8edf2" font-size="20">pod and compute go away</text>
-      <text x="600" y="223" text-anchor="middle" fill="#a7b3bf" font-size="19">the files stay</text>
+      <rect x="460" y="115" width="280" height="140" rx="14" fill="#0f3a66" stroke="#4fd9a0" stroke-width="2"/>
+      <circle cx="488" cy="143" r="18" fill="#4fd9a0"/><text x="488" y="150" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">2</text>
+      <text x="610" y="151" text-anchor="middle" fill="#4fd9a0" font-size="26" font-weight="700">pause</text>
+      <text x="600" y="193" text-anchor="middle" fill="#eceaff" font-size="20">pod and compute go away</text>
+      <text x="600" y="223" text-anchor="middle" fill="#b3bddc" font-size="19">the files stay</text>
       <path d="M740 185 L800 185" stroke="#a7b3bf" stroke-width="3" marker-end="url(#j)"/>
       <!-- node B -->
-      <rect x="810" y="40" width="360" height="290" rx="14" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <circle cx="838" cy="68" r="18" fill="#ff9900"/><text x="838" y="75" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">3</text>
-      <text x="1005" y="76" text-anchor="middle" fill="#e8edf2" font-size="26" font-weight="700">Node B</text>
-      <rect x="840" y="105" width="300" height="200" rx="12" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <rect x="810" y="40" width="360" height="290" rx="14" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <circle cx="838" cy="68" r="18" fill="#ff9900"/><text x="838" y="75" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">3</text>
+      <text x="1005" y="76" text-anchor="middle" fill="#eceaff" font-size="26" font-weight="700">Node B</text>
+      <rect x="840" y="105" width="300" height="200" rx="12" fill="#072a45" stroke="#ff9900" stroke-width="4"/>
       <text x="990" y="140" text-anchor="middle" fill="#ff9900" font-size="22" font-weight="700">same pod, resumed</text>
-      <rect x="865" y="160" width="250" height="52" rx="8" fill="#1a3a2a" stroke="#3ecf8e"/><text x="990" y="194" text-anchor="middle" fill="#3ecf8e" font-size="21">continues the task</text>
-      <rect x="865" y="228" width="250" height="52" rx="8" fill="#161d26" stroke="#2a3542"/><text x="990" y="262" text-anchor="middle" fill="#a7b3bf" font-size="20">open work intact</text>
+      <rect x="865" y="160" width="250" height="52" rx="8" fill="#0f4a4a" stroke="#4fd9a0"/><text x="990" y="194" text-anchor="middle" fill="#4fd9a0" font-size="21">continues the task</text>
+      <rect x="865" y="228" width="250" height="52" rx="8" fill="#0f3a66" stroke="#2b5a8a"/><text x="990" y="262" text-anchor="middle" fill="#b3bddc" font-size="20">open work intact</text>
       <!-- remote storage -->
       <path d="M210 330 L210 360" stroke="#a7b3bf" stroke-width="3" marker-end="url(#j)"/>
       <path d="M990 360 L990 330" stroke="#a7b3bf" stroke-width="3" marker-end="url(#j)"/>
-      <rect x="30" y="365" width="1140" height="60" rx="12" fill="#1a2a3a" stroke="#4aa3ff" stroke-width="2"/>
-      <text x="600" y="403" text-anchor="middle" fill="#4aa3ff" font-size="22" font-weight="700">remote storage: workspace, session history, the agent's notes to itself</text>
+      <rect x="30" y="365" width="1140" height="60" rx="12" fill="#153f7a" stroke="#7aa7ff" stroke-width="2"/>
+      <text x="600" y="403" text-anchor="middle" fill="#7aa7ff" font-size="22" font-weight="700">remote storage: workspace, session history, the agent's notes to itself</text>
     </svg>
   </div>
   <p class="caption">Watch for: the task picks up mid-flight on Node B, from its files, not from the start.</p>
@@ -651,17 +658,17 @@ route:   <span class="hl">none</span></pre>
   <h2>The confidential use case: the node is the adversary <span class="tag">confidential-sandbox</span></h2>
   <div class="fill">
     <svg viewBox="0 0 1200 460" role="img" aria-label="An EKS node labelled parent instance, not trusted, holds a confidential sandbox. Inside the sandbox: the agent's prompts, model context, source code, credentials and results, on an encrypted overlay, under the sandbox's own kernel. Outside the sandbox on the node: the node operator, a compromised kubelet or containerd, and the Pod Identity credentials. Three crossed-out arrows from the node into the sandbox read: cannot read memory, cannot read disk, cannot exec in. One arrow out of the sandbox to AWS KMS reads: keys released only to an attested guest.">
-      <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
       <!-- node -->
-      <rect x="30" y="30" width="860" height="400" rx="16" fill="#161d26" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="12 8"/>
-      <text x="55" y="68" fill="#ff6b6b" font-size="24" font-weight="700">EKS node: parent instance, not trusted</text>
+      <rect x="30" y="30" width="860" height="400" rx="16" fill="#0f3a66" stroke="#ff7b7b" stroke-width="2" stroke-dasharray="12 8"/>
+      <text x="55" y="68" fill="#ff7b7b" font-size="24" font-weight="700">EKS node: parent instance, not trusted</text>
       <!-- node-side actors -->
-      <rect x="55" y="110" width="250" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="180" y="148" text-anchor="middle" fill="#e8edf2" font-size="21">node operator</text>
-      <rect x="55" y="190" width="250" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="180" y="228" text-anchor="middle" fill="#e8edf2" font-size="20">compromised kubelet</text>
-      <rect x="55" y="270" width="250" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="180" y="308" text-anchor="middle" fill="#e8edf2" font-size="20">Pod Identity credentials</text>
-      <text x="180" y="372" text-anchor="middle" fill="#a7b3bf" font-size="18">the node can use these too</text>
+      <rect x="55" y="110" width="250" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="180" y="148" text-anchor="middle" fill="#eceaff" font-size="21">node operator</text>
+      <rect x="55" y="190" width="250" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="180" y="228" text-anchor="middle" fill="#eceaff" font-size="20">compromised kubelet</text>
+      <rect x="55" y="270" width="250" height="60" rx="10" fill="#072a45" stroke="#2b5a8a"/><text x="180" y="308" text-anchor="middle" fill="#eceaff" font-size="20">Pod Identity credentials</text>
+      <text x="180" y="372" text-anchor="middle" fill="#b3bddc" font-size="18">the node can use these too</text>
       <!-- blocked arrows -->
-      <g stroke="#ff6b6b" stroke-width="3" fill="none">
+      <g stroke="#ff7b7b" stroke-width="3" fill="none">
         <path d="M305 140 L470 140" marker-end="url(#k)"/>
         <path d="M305 220 L470 220" marker-end="url(#k)"/>
         <path d="M305 300 L470 300" marker-end="url(#k)"/>
@@ -669,26 +676,26 @@ route:   <span class="hl">none</span></pre>
         <path d="M378 202 L402 238 M402 202 L378 238"/>
         <path d="M378 282 L402 318 M402 282 L378 318"/>
       </g>
-      <text x="390" y="112" text-anchor="middle" fill="#ff6b6b" font-size="16">no memory read</text>
-      <text x="390" y="192" text-anchor="middle" fill="#ff6b6b" font-size="16">no disk read</text>
-      <text x="390" y="272" text-anchor="middle" fill="#ff6b6b" font-size="16">no exec</text>
+      <text x="390" y="112" text-anchor="middle" fill="#ff7b7b" font-size="16">no memory read</text>
+      <text x="390" y="192" text-anchor="middle" fill="#ff7b7b" font-size="16">no disk read</text>
+      <text x="390" y="272" text-anchor="middle" fill="#ff7b7b" font-size="16">no exec</text>
       <!-- sandbox -->
-      <rect x="480" y="90" width="385" height="310" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <rect x="480" y="90" width="385" height="310" rx="14" fill="#072a45" stroke="#ff9900" stroke-width="4"/>
       <text x="672" y="125" text-anchor="middle" fill="#ff9900" font-size="22" font-weight="700">confidential sandbox</text>
-      <rect x="505" y="150" width="335" height="150" rx="10" fill="#1a3a2a" stroke="#3ecf8e"/>
-      <text x="672" y="183" text-anchor="middle" fill="#3ecf8e" font-size="21" font-weight="700">the agent's data</text>
-      <text x="672" y="216" text-anchor="middle" fill="#e8edf2" font-size="19">prompts, model context, source</text>
-      <text x="672" y="246" text-anchor="middle" fill="#e8edf2" font-size="19">customer records, results</text>
-      <text x="672" y="280" text-anchor="middle" fill="#a7b3bf" font-size="17">encrypted overlay, own kernel</text>
-      <rect x="505" y="320" width="335" height="56" rx="10" fill="#161d26" stroke="#2a3542"/>
-      <text x="672" y="355" text-anchor="middle" fill="#a7b3bf" font-size="18">policy pins image, args, mounts</text>
+      <rect x="505" y="150" width="335" height="150" rx="10" fill="#0f4a4a" stroke="#4fd9a0"/>
+      <text x="672" y="183" text-anchor="middle" fill="#4fd9a0" font-size="21" font-weight="700">the agent's data</text>
+      <text x="672" y="216" text-anchor="middle" fill="#eceaff" font-size="19">prompts, model context, source</text>
+      <text x="672" y="246" text-anchor="middle" fill="#eceaff" font-size="19">customer records, results</text>
+      <text x="672" y="280" text-anchor="middle" fill="#b3bddc" font-size="17">encrypted overlay, own kernel</text>
+      <rect x="505" y="320" width="335" height="56" rx="10" fill="#0f3a66" stroke="#2b5a8a"/>
+      <text x="672" y="355" text-anchor="middle" fill="#b3bddc" font-size="18">policy pins image, args, mounts</text>
       <!-- KMS -->
-      <path d="M865 245 L950 245" stroke="#3ecf8e" stroke-width="3" marker-end="url(#k)"/>
-      <rect x="960" y="170" width="210" height="150" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
-      <text x="1065" y="212" text-anchor="middle" fill="#3ecf8e" font-size="22" font-weight="700">AWS KMS</text>
-      <text x="1065" y="248" text-anchor="middle" fill="#e8edf2" font-size="18">releases keys only</text>
-      <text x="1065" y="276" text-anchor="middle" fill="#e8edf2" font-size="18">to an attested guest</text>
-      <text x="1065" y="305" text-anchor="middle" fill="#a7b3bf" font-size="16">the node is refused</text>
+      <path d="M865 245 L950 245" stroke="#4fd9a0" stroke-width="3" marker-end="url(#k)"/>
+      <rect x="960" y="170" width="210" height="150" rx="14" fill="#0f3a66" stroke="#4fd9a0" stroke-width="2"/>
+      <text x="1065" y="212" text-anchor="middle" fill="#4fd9a0" font-size="22" font-weight="700">AWS KMS</text>
+      <text x="1065" y="248" text-anchor="middle" fill="#eceaff" font-size="18">releases keys only</text>
+      <text x="1065" y="276" text-anchor="middle" fill="#eceaff" font-size="18">to an attested guest</text>
+      <text x="1065" y="305" text-anchor="middle" fill="#b3bddc" font-size="16">the node is refused</text>
     </svg>
   </div>
   <p class="caption">When the data matters more than the node: regulated workloads, multi-tenant platforms, third-party clusters.</p>
@@ -709,28 +716,28 @@ route:   <span class="hl">none</span></pre>
   <h2>The gap: the node still tells the guest what to run</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 460" role="img" aria-label="The node sends requests into the microVM: create container with an image, args and mounts; exec; read logs. The guest agent receives them. A question asks who decides whether to obey when the node itself is untrusted.">
-      <defs><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
-      <rect x="30" y="60" width="330" height="340" rx="14" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-      <text x="195" y="100" text-anchor="middle" fill="#e8edf2" font-size="28" font-weight="700">Node</text>
-      <text x="195" y="130" text-anchor="middle" fill="#a7b3bf" font-size="21">kubelet, containerd, shim</text>
-      <text x="195" y="185" text-anchor="middle" fill="#a7b3bf" font-size="21">operated by the cluster admin,</text>
-      <text x="195" y="213" text-anchor="middle" fill="#a7b3bf" font-size="21">or by whoever compromised it</text>
-      <rect x="45" y="260" width="300" height="115" rx="10" fill="#3a1a1a" stroke="#ff6b6b" stroke-width="2"/>
-      <text x="195" y="298" text-anchor="middle" fill="#ff6b6b" font-size="21" font-weight="700">can swap the image,</text>
-      <text x="195" y="327" text-anchor="middle" fill="#ff6b6b" font-size="21" font-weight="700">add a mount, exec a shell</text>
-      <text x="195" y="358" text-anchor="middle" fill="#a7b3bf" font-size="16">the VM boundary stops none of this</text>
-      <g fill="#e8edf2" font-size="20" font-family="Menlo, monospace">
+      <defs><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
+      <rect x="30" y="60" width="330" height="340" rx="14" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+      <text x="195" y="100" text-anchor="middle" fill="#eceaff" font-size="28" font-weight="700">Node</text>
+      <text x="195" y="130" text-anchor="middle" fill="#b3bddc" font-size="21">kubelet, containerd, shim</text>
+      <text x="195" y="185" text-anchor="middle" fill="#b3bddc" font-size="21">operated by the cluster admin,</text>
+      <text x="195" y="213" text-anchor="middle" fill="#b3bddc" font-size="21">or by whoever compromised it</text>
+      <rect x="45" y="260" width="300" height="115" rx="10" fill="#4a1f2e" stroke="#ff7b7b" stroke-width="2"/>
+      <text x="195" y="298" text-anchor="middle" fill="#ff7b7b" font-size="21" font-weight="700">can swap the image,</text>
+      <text x="195" y="327" text-anchor="middle" fill="#ff7b7b" font-size="21" font-weight="700">add a mount, exec a shell</text>
+      <text x="195" y="358" text-anchor="middle" fill="#b3bddc" font-size="16">the VM boundary stops none of this</text>
+      <g fill="#eceaff" font-size="20" font-family="Menlo, monospace">
         <path d="M360 150 L750 150" stroke="#a7b3bf" stroke-width="3" marker-end="url(#g)"/><text x="555" y="138" text-anchor="middle">CreateContainer(image, args, mounts)</text>
         <path d="M360 230 L750 230" stroke="#a7b3bf" stroke-width="3" marker-end="url(#g)"/><text x="555" y="218" text-anchor="middle">Exec(container, "sh")</text>
         <path d="M360 310 L750 310" stroke="#a7b3bf" stroke-width="3" marker-end="url(#g)"/><text x="555" y="298" text-anchor="middle">ReadLogs, Stats, ListProcesses</text>
       </g>
-      <rect x="760" y="60" width="410" height="340" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <rect x="760" y="60" width="410" height="340" rx="14" fill="#072a45" stroke="#ff9900" stroke-width="4"/>
       <text x="965" y="100" text-anchor="middle" fill="#ff9900" font-size="28" font-weight="700">microVM</text>
-      <rect x="790" y="130" width="350" height="90" rx="10" fill="#2b1b0e" stroke="#ff9900"/>
+      <rect x="790" y="130" width="350" height="90" rx="10" fill="#4a2e0a" stroke="#ff9900"/>
       <text x="965" y="168" text-anchor="middle" fill="#ff9900" font-size="24" font-weight="700">guest agent</text>
-      <text x="965" y="200" text-anchor="middle" fill="#a7b3bf" font-size="21">receives every request</text>
-      <rect x="790" y="240" width="350" height="60" rx="10" fill="#161d26" stroke="#2a3542"/><text x="965" y="278" text-anchor="middle" fill="#e8edf2" font-size="22">your containers and your data</text>
-      <text x="965" y="355" text-anchor="middle" fill="#e8edf2" font-size="25" font-weight="700">who decides whether to obey?</text>
+      <text x="965" y="200" text-anchor="middle" fill="#b3bddc" font-size="21">receives every request</text>
+      <rect x="790" y="240" width="350" height="60" rx="10" fill="#0f3a66" stroke="#2b5a8a"/><text x="965" y="278" text-anchor="middle" fill="#eceaff" font-size="22">your containers and your data</text>
+      <text x="965" y="355" text-anchor="middle" fill="#eceaff" font-size="25" font-weight="700">who decides whether to obey?</text>
     </svg>
   </div>
   <aside class="notes">
@@ -815,57 +822,57 @@ route:   <span class="hl">none</span></pre>
   <h2>Closing the loop: a measured policy and an outside verifier</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 470" role="img" aria-label="Six numbered steps. One: the workload owner runs genpolicy on the manifest. Two: the policy goes on the pod as an annotation. Three: the guest agent enforces it and measures it into PCR17. Four: the guest requests an attestation document from the Nitro Secure Module. Five: KMS checks the key policy condition on PCR17 and PCR8 ServiceName. Six: only on a match is the key released, so encrypted image layers and secrets open inside the guest.">
-      <defs><marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <defs><marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3bddc"/></marker></defs>
       <g>
-        <rect x="30" y="40" width="250" height="120" rx="12" fill="#161d26" stroke="#4aa3ff" stroke-width="2"/>
-        <circle cx="55" cy="65" r="16" fill="#4aa3ff"/><text x="55" y="71" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">1</text>
-        <text x="155" y="95" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">workload owner</text>
-        <text x="155" y="125" text-anchor="middle" fill="#a7b3bf" font-size="20">genpolicy manifest.yaml</text>
-        <text x="155" y="148" text-anchor="middle" fill="#a7b3bf" font-size="17">prints the predicted PCR17</text>
+        <rect x="30" y="40" width="250" height="120" rx="12" fill="#0f3a66" stroke="#7aa7ff" stroke-width="2"/>
+        <circle cx="55" cy="65" r="16" fill="#7aa7ff"/><text x="55" y="71" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">1</text>
+        <text x="155" y="95" text-anchor="middle" fill="#eceaff" font-size="23" font-weight="700">workload owner</text>
+        <text x="155" y="125" text-anchor="middle" fill="#b3bddc" font-size="20">genpolicy manifest.yaml</text>
+        <text x="155" y="148" text-anchor="middle" fill="#b3bddc" font-size="17">prints the predicted PCR17</text>
       </g>
       <path d="M280 100 L320 100" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)"/>
       <g>
-        <rect x="330" y="40" width="250" height="120" rx="12" fill="#161d26" stroke="#2a3542" stroke-width="2"/>
-        <circle cx="355" cy="65" r="16" fill="#a7b3bf"/><text x="355" y="71" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">2</text>
-        <text x="455" y="95" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">pod annotation</text>
-        <text x="455" y="125" text-anchor="middle" fill="#a7b3bf" font-size="20">signed policy envelope</text>
-        <text x="455" y="148" text-anchor="middle" fill="#a7b3bf" font-size="17">delivered by the node</text>
+        <rect x="330" y="40" width="250" height="120" rx="12" fill="#0f3a66" stroke="#2b5a8a" stroke-width="2"/>
+        <circle cx="355" cy="65" r="16" fill="#b3bddc"/><text x="355" y="71" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">2</text>
+        <text x="455" y="95" text-anchor="middle" fill="#eceaff" font-size="23" font-weight="700">pod annotation</text>
+        <text x="455" y="125" text-anchor="middle" fill="#b3bddc" font-size="20">signed policy envelope</text>
+        <text x="455" y="148" text-anchor="middle" fill="#b3bddc" font-size="17">delivered by the node</text>
       </g>
       <path d="M580 100 L620 100" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)"/>
-      <rect x="630" y="30" width="540" height="410" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <rect x="630" y="30" width="540" height="410" rx="14" fill="#072a45" stroke="#ff9900" stroke-width="4"/>
       <text x="900" y="62" text-anchor="middle" fill="#ff9900" font-size="23" font-weight="700">confidential sandbox</text>
       <g>
-        <rect x="660" y="80" width="480" height="90" rx="10" fill="#2b1b0e" stroke="#ff9900"/>
-        <circle cx="685" cy="105" r="16" fill="#ff9900"/><text x="685" y="111" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">3</text>
-        <text x="915" y="112" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">guest agent enforces the policy</text>
-        <text x="915" y="145" text-anchor="middle" fill="#a7b3bf" font-size="20">and measures it into PCR17</text>
+        <rect x="660" y="80" width="480" height="90" rx="10" fill="#4a2e0a" stroke="#ff9900"/>
+        <circle cx="685" cy="105" r="16" fill="#ff9900"/><text x="685" y="111" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">3</text>
+        <text x="915" y="112" text-anchor="middle" fill="#eceaff" font-size="23" font-weight="700">guest agent enforces the policy</text>
+        <text x="915" y="145" text-anchor="middle" fill="#b3bddc" font-size="20">and measures it into PCR17</text>
       </g>
       <path d="M900 170 L900 200" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)"/>
       <g>
-        <rect x="660" y="210" width="480" height="80" rx="10" fill="#161d26" stroke="#2a3542"/>
-        <circle cx="685" cy="235" r="16" fill="#a7b3bf"/><text x="685" y="241" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">4</text>
-        <text x="915" y="242" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">Nitro Secure Module</text>
-        <text x="915" y="272" text-anchor="middle" fill="#a7b3bf" font-size="20">signs an attestation document with the PCRs</text>
+        <rect x="660" y="210" width="480" height="80" rx="10" fill="#0f3a66" stroke="#2b5a8a"/>
+        <circle cx="685" cy="235" r="16" fill="#b3bddc"/><text x="685" y="241" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">4</text>
+        <text x="915" y="242" text-anchor="middle" fill="#eceaff" font-size="23" font-weight="700">Nitro Secure Module</text>
+        <text x="915" y="272" text-anchor="middle" fill="#b3bddc" font-size="20">signs an attestation document with the PCRs</text>
       </g>
       <path d="M900 290 L900 320" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)"/>
       <g>
-        <rect x="660" y="330" width="480" height="90" rx="10" fill="#1a3a2a" stroke="#3ecf8e"/>
-        <circle cx="685" cy="355" r="16" fill="#3ecf8e"/><text x="685" y="361" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">6</text>
-        <text x="915" y="362" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">key released only on a match</text>
-        <text x="915" y="395" text-anchor="middle" fill="#a7b3bf" font-size="20">encrypted layers open inside the guest</text>
+        <rect x="660" y="330" width="480" height="90" rx="10" fill="#0f4a4a" stroke="#4fd9a0"/>
+        <circle cx="685" cy="355" r="16" fill="#4fd9a0"/><text x="685" y="361" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">6</text>
+        <text x="915" y="362" text-anchor="middle" fill="#eceaff" font-size="23" font-weight="700">key released only on a match</text>
+        <text x="915" y="395" text-anchor="middle" fill="#b3bddc" font-size="20">encrypted layers open inside the guest</text>
       </g>
       <g>
-        <rect x="30" y="230" width="550" height="200" rx="12" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
-        <circle cx="55" cy="255" r="16" fill="#3ecf8e"/><text x="55" y="261" text-anchor="middle" fill="#0f1419" font-size="21" font-weight="700">5</text>
-        <text x="305" y="262" text-anchor="middle" fill="#e8edf2" font-size="23" font-weight="700">outside verifier: KMS key policy</text>
-        <g fill="#e8edf2" font-size="17" font-family="Menlo, monospace">
+        <rect x="30" y="230" width="550" height="200" rx="12" fill="#0f3a66" stroke="#4fd9a0" stroke-width="2"/>
+        <circle cx="55" cy="255" r="16" fill="#4fd9a0"/><text x="55" y="261" text-anchor="middle" fill="#072a45" font-size="21" font-weight="700">5</text>
+        <text x="305" y="262" text-anchor="middle" fill="#eceaff" font-size="23" font-weight="700">outside verifier: KMS key policy</text>
+        <g fill="#eceaff" font-size="17" font-family="Menlo, monospace">
           <text x="60" y="292">"Condition": { "StringEqualsIgnoreCase": {</text>
           <text x="60" y="316" fill="#ff9900">  "kms:RecipientAttestation:PCR17": "&lt;PCR17&gt;",</text>
           <text x="60" y="340" fill="#ff9900">  "kms:RecipientAttestation:PCR8:ServiceName":</text>
           <text x="60" y="364" fill="#ff9900">      "eks.amazonaws.com"</text>
           <text x="60" y="388">}}</text>
         </g>
-        <text x="305" y="418" text-anchor="middle" fill="#a7b3bf" font-size="17">a changed policy changes PCR17: Decrypt refused</text>
+        <text x="305" y="418" text-anchor="middle" fill="#b3bddc" font-size="17">a changed policy changes PCR17: Decrypt refused</text>
       </g>
       <path d="M580 330 L650 300" stroke="#a7b3bf" stroke-width="3" marker-end="url(#h)" fill="none"/>
     </svg>
