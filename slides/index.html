@@ -625,40 +625,65 @@ route:   <span class="hl">none</span></pre>
       <li>In Kubernetes, a <b>RuntimeClass</b> whose <code>handler</code> is that name. It also carries the <b>pod overhead</b> the guest costs and a <b>nodeSelector</b> for capable nodes, which is why the pod needs no selector of its own.</li>
       <li>Values here are illustrative; the shape is what matters.</li>
     </ul>
-    <p><i>Next:</i> the VMM.</p>
+    <p><i>Next:</i> when the node itself is the adversary.</p>
   </aside>
 </section>
 
 <!-- 13 -->
 <section class="slide" data-who="Todd" aria-label="Slide 13 of 20">
-  <h2>Firecracker: a VMM built for one job <span class="tag">firecracker-microvm</span></h2>
-  <div class="grid3" style="flex:1;align-content:center">
-    <div class="card">
-      <h3>Small by design</h3>
-      <p>Open source VMM on KVM</p>
-      <p>virtio block, net, vsock. No BIOS, no PCI.</p>
-    </div>
-    <div class="card">
-      <h3>Fast and dense</h3>
-      <p>Boots in about <b>125 ms</b></p>
-      <p>Under <b>5 MiB</b> overhead per microVM</p>
-    </div>
-    <div class="card">
-      <h3>Defense in depth</h3>
-      <p><code>jailer</code>: chroot, cgroups, seccomp</p>
-      <p>Runs AWS Lambda and Fargate</p>
-    </div>
+  <h2>The confidential use case: the node is the adversary <span class="tag">confidential-sandbox</span></h2>
+  <div class="fill">
+    <svg viewBox="0 0 1200 460" role="img" aria-label="An EKS node labelled parent instance, not trusted, holds a confidential sandbox. Inside the sandbox: the agent's prompts, model context, source code, credentials and results, on an encrypted overlay, under the sandbox's own kernel. Outside the sandbox on the node: the node operator, a compromised kubelet or containerd, and the Pod Identity credentials. Three crossed-out arrows from the node into the sandbox read: cannot read memory, cannot read disk, cannot exec in. One arrow out of the sandbox to AWS KMS reads: keys released only to an attested guest.">
+      <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#a7b3bf"/></marker></defs>
+      <!-- node -->
+      <rect x="30" y="30" width="860" height="400" rx="16" fill="#161d26" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="12 8"/>
+      <text x="55" y="68" fill="#ff6b6b" font-size="24" font-weight="700">EKS node: parent instance, not trusted</text>
+      <!-- node-side actors -->
+      <rect x="55" y="110" width="250" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="180" y="148" text-anchor="middle" fill="#e8edf2" font-size="21">node operator</text>
+      <rect x="55" y="190" width="250" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="180" y="228" text-anchor="middle" fill="#e8edf2" font-size="20">compromised kubelet</text>
+      <rect x="55" y="270" width="250" height="60" rx="10" fill="#0f1419" stroke="#2a3542"/><text x="180" y="308" text-anchor="middle" fill="#e8edf2" font-size="20">Pod Identity credentials</text>
+      <text x="180" y="372" text-anchor="middle" fill="#a7b3bf" font-size="18">the node can use these too</text>
+      <!-- blocked arrows -->
+      <g stroke="#ff6b6b" stroke-width="3" fill="none">
+        <path d="M305 140 L470 140" marker-end="url(#k)"/>
+        <path d="M305 220 L470 220" marker-end="url(#k)"/>
+        <path d="M305 300 L470 300" marker-end="url(#k)"/>
+        <path d="M378 122 L402 158 M402 122 L378 158"/>
+        <path d="M378 202 L402 238 M402 202 L378 238"/>
+        <path d="M378 282 L402 318 M402 282 L378 318"/>
+      </g>
+      <text x="390" y="112" text-anchor="middle" fill="#ff6b6b" font-size="16">no memory read</text>
+      <text x="390" y="192" text-anchor="middle" fill="#ff6b6b" font-size="16">no disk read</text>
+      <text x="390" y="272" text-anchor="middle" fill="#ff6b6b" font-size="16">no exec</text>
+      <!-- sandbox -->
+      <rect x="480" y="90" width="385" height="310" rx="14" fill="#0f1419" stroke="#ff9900" stroke-width="4"/>
+      <text x="672" y="125" text-anchor="middle" fill="#ff9900" font-size="22" font-weight="700">confidential sandbox</text>
+      <rect x="505" y="150" width="335" height="150" rx="10" fill="#1a3a2a" stroke="#3ecf8e"/>
+      <text x="672" y="183" text-anchor="middle" fill="#3ecf8e" font-size="21" font-weight="700">the agent's data</text>
+      <text x="672" y="216" text-anchor="middle" fill="#e8edf2" font-size="19">prompts, model context, source</text>
+      <text x="672" y="246" text-anchor="middle" fill="#e8edf2" font-size="19">customer records, results</text>
+      <text x="672" y="280" text-anchor="middle" fill="#a7b3bf" font-size="17">encrypted overlay, own kernel</text>
+      <rect x="505" y="320" width="335" height="56" rx="10" fill="#161d26" stroke="#2a3542"/>
+      <text x="672" y="355" text-anchor="middle" fill="#a7b3bf" font-size="18">policy pins image, args, mounts</text>
+      <!-- KMS -->
+      <path d="M865 245 L950 245" stroke="#3ecf8e" stroke-width="3" marker-end="url(#k)"/>
+      <rect x="960" y="170" width="210" height="150" rx="14" fill="#161d26" stroke="#3ecf8e" stroke-width="2"/>
+      <text x="1065" y="212" text-anchor="middle" fill="#3ecf8e" font-size="22" font-weight="700">AWS KMS</text>
+      <text x="1065" y="248" text-anchor="middle" fill="#e8edf2" font-size="18">releases keys only</text>
+      <text x="1065" y="276" text-anchor="middle" fill="#e8edf2" font-size="18">to an attested guest</text>
+      <text x="1065" y="305" text-anchor="middle" fill="#a7b3bf" font-size="16">the node is refused</text>
+    </svg>
   </div>
-  <p class="caption">A microVM per pod is only as cheap as the VMM under it.</p>
+  <p class="caption">When the data matters more than the node: regulated workloads, multi-tenant platforms, third-party clusters.</p>
   <aside class="notes">
-    <p>Why a purpose-built VMM instead of a general one.</p>
+    <p><b>Todd.</b> Isolated mode protects the node from the agent. Sometimes you need the reverse.</p>
     <ul>
-      <li>Firecracker exposes <b>only what a container guest needs</b>: virtio block, net and vsock. A smaller device model is a smaller attack surface for the guest to push on.</li>
-      <li>It is <b>fast</b>, about 125 ms to boot, and <b>cheap</b>, a few MiB per microVM, so one per pod is a normal number, not a luxury.</li>
-      <li>The <code>jailer</code> wraps the VMM process itself in chroot, cgroups and seccomp. Even the thing holding the VM is confined.</li>
-      <li>It has been running Lambda and Fargate for years. This is not a lab component.</li>
+      <li>An agent handling <b>customer records</b>, <b>source code</b> or <b>regulated data</b> on a cluster you do not fully control: a shared platform team, a third-party provider, or a node someone may have compromised.</li>
+      <li><code>confidential-sandbox</code> makes the <b>sandbox</b> the boundary. The node cannot read its memory or its disk, and cannot exec into it. The writable layer is encrypted inside the guest.</li>
+      <li>The node still holds the pod's <b>credentials</b>, so credentials alone protect nothing. <b>KMS</b> releases keys only to a guest that proves what it is running. The node, with the same credentials and no attestation, is refused.</li>
     </ul>
-    <p><i>Next:</i> what a kernel boundary does <b>not</b> decide.</p>
+    <p>Limits, said plainly: the node can still deny service, and this protects the data from the node, not from the workload's own code.</p>
+    <p><i>Next:</i> the gap a kernel boundary alone leaves open.</p>
   </aside>
 </section>
 
