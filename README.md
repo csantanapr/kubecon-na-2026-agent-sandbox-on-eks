@@ -23,12 +23,11 @@ screen. The presenter bar names the speaker for the current slide.
 
 **Co-presenter.** The deck is given twice with different co-presenters. Open
 `slides/index.html` for Todd Neal (the default) or `slides/index.html?with=aaresh` for
-Aaresh Sharma: the title and closing slides, the venue line on the title slide (Demo Theater
-with Todd, AWS Booth with Aaresh), the presenter bar and every note that names the
+Aaresh Sharma: the title and closing slides, the presenter bar and every note that names the
 co-presenter switch together, and the presenter window inherits the choice.
-`slides/index.html?with=solo` is Carlos alone: no co-presenter block, no hand-offs in the
-notes, and no venue on the title slide. Add `&venue=Theater%20B` to any variant to set the
-line above the title.
+`slides/index.html?with=solo` is Carlos alone: no co-presenter block and no hand-offs in the
+notes. The title slide names only the conference; add `&venue=Theater%20B` to any variant to
+put a venue after it.
 
 Slides 1 to 10 are Carlos (why, the Kubernetes-native shape, demo); 11 to 18 are the
 co-presenter, or Carlos when solo (RuntimeClass, containerd, the confidential use case, Cedar, attestation, the

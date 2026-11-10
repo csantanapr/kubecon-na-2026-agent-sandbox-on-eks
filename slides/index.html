@@ -1022,7 +1022,8 @@ route:   <span class="hl">none</span></pre>
       <dt>f</dt><dd>full screen</dd>
       <dt>?</dt><dd>this help; Esc closes</dd>
       <dt>?with=aaresh</dt><dd>in the URL: co-presenter Aaresh Sharma instead of Todd Neal</dd>
-      <dt>?with=solo</dt><dd>Carlos alone; add &amp;venue=... to set the line above the title</dd>
+      <dt>?with=solo</dt><dd>Carlos alone</dd>
+      <dt>&amp;venue=...</dt><dd>adds a venue after the conference name on the title slide</dd>
     </dl>
     <p class="muted" style="font-size:1rem;margin:1rem 0 0">Presenter view: t resets the timer, + and &minus; resize the notes.</p>
   </div>
@@ -1036,14 +1037,14 @@ route:   <span class="hl">none</span></pre>
   // Co-presenter: index.html?with=aaresh or ?with=todd (default). Fills the speaker blocks on the
   // title and closing slides, the presenter bar, and every note that names the co-presenter.
   const PRESENTERS = {
-    todd:   { first: 'Todd',   name: 'Todd Neal',     title: 'Principal Software Engineer, AWS', handle: 'toddneal', photo: 'todd-neal.jpg', venue: 'Demo Theater' },
-    aaresh: { first: 'Aaresh', name: 'Aaresh Sharma', title: 'Senior Specialist Solutions Architect, Containers, AWS', handle: 'aaresh-sharma-452b72116', photo: 'aaresh-sharma.jpg', initials: 'AS', venue: 'AWS Booth' },
-    solo:   { first: 'Carlos', solo: true, venue: '' },   // Carlos alone: no co-presenter block, no hand-offs in the notes
+    todd:   { first: 'Todd',   name: 'Todd Neal',     title: 'Principal Software Engineer, AWS', handle: 'toddneal', photo: 'todd-neal.jpg' },
+    aaresh: { first: 'Aaresh', name: 'Aaresh Sharma', title: 'Senior Specialist Solutions Architect, Containers, AWS', handle: 'aaresh-sharma-452b72116', photo: 'aaresh-sharma.jpg', initials: 'AS' },
+    solo:   { first: 'Carlos', solo: true },   // Carlos alone: no co-presenter block, no hand-offs in the notes
   };
   const params = new URLSearchParams(location.search);
   const coKey = PRESENTERS[params.get('with')] ? params.get('with') : 'todd';
   const co = PRESENTERS[coKey];
-  const venue = params.has('venue') ? params.get('venue') : co.venue;   // &venue=... overrides the kicker on slide 1
+  const venue = params.get('venue') || '';   // the kicker names only the conference unless &venue=... adds a line
   const withQ = [coKey === 'todd' ? '' : 'with=' + coKey, params.has('venue') ? 'venue=' + encodeURIComponent(params.get('venue')) : ''].filter(Boolean).join('&');
   if (co.solo) document.body.classList.add('solo');
   document.querySelectorAll('.co-venue').forEach((el) => { el.textContent = venue; if (!venue) el.previousSibling.textContent = el.previousSibling.textContent.replace(/\s*\u00b7\s*$/, ''); });
