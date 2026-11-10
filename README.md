@@ -19,14 +19,21 @@ presenter view. Open it in a browser; no server is needed.
 | presenter: `t`, `+`, `-` | reset the timer, resize the notes |
 
 Put the deck window on the projector, press `p`, drag the presenter window to the laptop
-screen. The presenter bar names the speaker for the current slide (Carlos or Todd).
+screen. The presenter bar names the speaker for the current slide.
 
-Slides 1 to 10 are Carlos (why, the Kubernetes-native shape, demo); 11 to 18 are Todd
-(RuntimeClass, containerd, Firecracker, Cedar, confidential mode, the reference
-implementation); 19 and 20 are the blueprints call to action and thanks.
+**Co-presenter.** The deck is given twice with different co-presenters. Open
+`slides/index.html` for Todd Neal (the default) or `slides/index.html?with=aaresh` for
+Aaresh Sharma: the title and closing slides, the presenter bar and every note that names the
+co-presenter switch together, and the presenter window inherits the choice. Drop
+`slides/aaresh-sharma.jpg` next to `todd-neal.jpg` to replace the initials.
+
+Slides 1 to 10 are Carlos (why, the Kubernetes-native shape, demo); 11 to 18 are the
+co-presenter (RuntimeClass, containerd, the confidential use case, Cedar, attestation, the
+reference implementation); 19 and 20 are the blueprints call to action and thanks.
 
 ## Files
 
 - `slides/index.html`: the deck.
-- `slides/carlos-santana.jpg`: speaker photo.
+- `slides/carlos-santana.jpg`, `slides/todd-neal.jpg`: speaker photos.
+- `slides/sandboxing-how-it-works.png`: the slide 11 architecture diagram.
 - `slides/blueprints-qr.svg`: QR code for <https://github.com/aws-samples/sample-eks-nitro-sandbox>.

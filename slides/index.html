@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Agent Sandbox on EKS: Hardware-Isolated microVM Pods for AI Agents</title>
-<meta name="description" content="KubeCon NA 2026 Demo Theater. Carlos Santana and Todd Neal, AWS.">
+<meta name="description" content="KubeCon NA 2026. Carlos Santana with Todd Neal or Aaresh Sharma, AWS.">
 <style>
   :root {
     --bg: #0f1419; --panel: #161d26; --ink: #e8edf2; --muted: #a7b3bf;
@@ -153,15 +153,15 @@
       <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div><a class="speaker-link" href="https://www.linkedin.com/in/csantanapr/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>linkedin.com/in/csantanapr</a></div>
     </div>
     <div class="speaker">
-      <img src="todd-neal.jpg" alt="">
-      <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div><a class="speaker-link" href="https://www.linkedin.com/in/toddneal/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>linkedin.com/in/toddneal</a></div>
+      <img class="co-photo" src="todd-neal.jpg" alt="">
+      <div><div class="speaker-name co-name">Todd Neal</div><div class="speaker-title co-title">Principal Software Engineer, AWS</div><a class="speaker-link co-link" href="https://www.linkedin.com/in/toddneal/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg><span>linkedin.com/in/<span class="co-handle">toddneal</span></span></a></div>
     </div>
   </div>
   <aside class="notes">
     <p><b>Carlos.</b> Twenty minutes, two halves.</p>
     <ul>
       <li>I take the <b>why</b> and the <b>Kubernetes-native shape</b>: one line on a pod spec, agent-sandbox, scoped egress and credentials, then a <b>live demo</b>.</li>
-      <li>Todd takes <b>how it is built</b>: what sits under a RuntimeClass, containerd and a VMM, and why <b>Cedar</b> policy is what makes a confidential sandbox trustworthy.</li>
+      <li><span class="co-first">Todd</span> takes <b>how it is built</b>: what sits under a RuntimeClass, containerd and a VMM, and why <b>Cedar</b> policy is what makes a confidential sandbox trustworthy.</li>
       <li>We close with the <b>blueprints</b> you can run this afternoon.</li>
     </ul>
     <p><i>Next:</i> the problem.</p>
@@ -521,7 +521,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 10 -->
-<section class="slide" data-who="Carlos + Todd" aria-label="Slide 10 of 20: Demo">
+<section class="slide" data-who="Carlos + co" aria-label="Slide 10 of 20: Demo">
   <h2>Demo: pause an agent, resume it on another node <span class="tag">live</span></h2>
   <div class="fill">
     <svg viewBox="0 0 1200 440" role="img" aria-label="Three numbered steps. One: on node A, an agent pod in a Nitro sandbox works on a task; its workspace and session history are files on remote storage. Two: pause releases the pod and its compute; the files stay on remote storage. Three: resume brings the same pod up on node B, which mounts the same files, and the agent continues the task where it stopped.">
@@ -559,7 +559,7 @@ route:   <span class="hl">none</span></pre>
   </div>
   <p class="caption">Watch for: the task picks up mid-flight on Node B, from its files, not from the start.</p>
   <aside class="notes">
-    <p><b>Carlos drives, Todd narrates.</b> The agent is an agent-sandbox <code>Sandbox</code> on <code>isolated-sandbox</code>, with its workspace on remote storage a pod on any node can mount.</p>
+    <p><b>Carlos drives, <span class="co-first">Todd</span> narrates.</b> The agent is an agent-sandbox <code>Sandbox</code> on <code>isolated-sandbox</code>, with its workspace on remote storage a pod on any node can mount.</p>
     <ul>
       <li><b>1.</b> Give it real work. Point at what it writes as it goes: the files it is editing, its session history, its notes to itself.</li>
       <li><b>2.</b> <b>Pause</b>: <code>operatingMode: Suspended</code>. The pod is gone from Node A and you stop paying for it. The volume is still there.</li>
@@ -568,18 +568,18 @@ route:   <span class="hl">none</span></pre>
     <p><i>Say it plainly:</i> process memory does not survive a pause. The agent's state does, because the harness keeps it as files.</p>
     <p>From inside: <code>product_name</code> and the virtio disks, so the audience sees it is still a sandbox after the move.</p>
     <p>If the venue network fails: the recorded run is on the laptop, same commands, same output.</p>
-    <p><i>Next:</i> Todd, how this is built.</p>
+    <p><i>Next:</i> <span class="co-first">Todd</span>, how this is built.</p>
   </aside>
 </section>
 
 <!-- 11 -->
-<section class="slide" data-who="Todd" aria-label="Slide 11 of 20">
+<section class="slide" data-who="co" aria-label="Slide 11 of 20">
   <h2>What sits under a RuntimeClass</h2>
   <div class="fill">
     <img class="diagram" src="sandboxing-how-it-works.png" alt="On the parent EC2 instance: kubelet talks to containerd, containerd to the sandbox-shim, and the shim drives firecracker, which exposes virtio-vsock, virtio-blk and virtio-net devices to the parent kernel. Inside the Nitro Sandbox: eks-sandbox-agent talks to its own containerd, which runs the workload on the sandbox's own kernel. The device data path between the two is a set of Device Memory Buffers. Sandbox lifecycle and runtime notifications pass between the two kernels through the Nitro Hypervisor underneath both.">
   </div>
   <aside class="notes">
-    <p><b>Todd.</b> Two machines on one slide, and the hypervisor under both.</p>
+    <p><b><span class="co-first">Todd</span>.</b> Two machines on one slide, and the hypervisor under both.</p>
     <ul>
       <li><b>Left, the parent instance</b>: kubelet, containerd, and the <b>sandbox-shim</b>, the shim v2 binary the RuntimeClass handler points at. It drives <b>firecracker</b>, which presents <b>virtio-vsock, blk and net</b> to the parent kernel.</li>
       <li><b>Right, the Nitro Sandbox</b>: its own kernel, <b>eks-sandbox-agent</b> taking requests from the shim, and its own containerd running the workload. The images are unchanged.</li>
@@ -591,7 +591,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 12 -->
-<section class="slide center" data-who="Todd" aria-label="Slide 12 of 20">
+<section class="slide center" data-who="co" aria-label="Slide 12 of 20">
   <h2>Wiring a RuntimeClass to a shim</h2>
   <div class="grid2 wide-left">
     <div>
@@ -630,7 +630,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 13 -->
-<section class="slide" data-who="Todd" aria-label="Slide 13 of 20">
+<section class="slide" data-who="co" aria-label="Slide 13 of 20">
   <h2>The confidential use case: the node is the adversary <span class="tag">confidential-sandbox</span></h2>
   <div class="fill">
     <svg viewBox="0 0 1200 460" role="img" aria-label="An EKS node labelled parent instance, not trusted, holds a confidential sandbox. Inside the sandbox: the agent's prompts, model context, source code, credentials and results, on an encrypted overlay, under the sandbox's own kernel. Outside the sandbox on the node: the node operator, a compromised kubelet or containerd, and the Pod Identity credentials. Three crossed-out arrows from the node into the sandbox read: cannot read memory, cannot read disk, cannot exec in. One arrow out of the sandbox to AWS KMS reads: keys released only to an attested guest.">
@@ -676,7 +676,7 @@ route:   <span class="hl">none</span></pre>
   </div>
   <p class="caption">When the data matters more than the node: regulated workloads, multi-tenant platforms, third-party clusters.</p>
   <aside class="notes">
-    <p><b>Todd.</b> Isolated mode protects the node from the agent. Sometimes you need the reverse.</p>
+    <p><b><span class="co-first">Todd</span>.</b> Isolated mode protects the node from the agent. Sometimes you need the reverse.</p>
     <ul>
       <li>An agent handling <b>customer records</b>, <b>source code</b> or <b>regulated data</b> on a cluster you do not fully control: a shared platform team, a third-party provider, or a node someone may have compromised.</li>
       <li><code>confidential-sandbox</code> makes the <b>sandbox</b> the boundary. The node cannot read its memory or its disk, and cannot exec into it. The writable layer is encrypted inside the guest.</li>
@@ -688,7 +688,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 14 -->
-<section class="slide" data-who="Todd" aria-label="Slide 14 of 20">
+<section class="slide" data-who="co" aria-label="Slide 14 of 20">
   <h2>The gap: the node still tells the guest what to run</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 460" role="img" aria-label="The node sends requests into the microVM: create container with an image, args and mounts; exec; read logs. The guest agent receives them. A question asks who decides whether to obey when the node itself is untrusted.">
@@ -728,7 +728,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 15 -->
-<section class="slide center" data-who="Todd" aria-label="Slide 15 of 20">
+<section class="slide center" data-who="co" aria-label="Slide 15 of 20">
   <h2>Cedar: the policy the guest enforces <span class="tag">CNCF Sandbox</span></h2>
   <div class="grid2">
     <div>
@@ -769,7 +769,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 16 -->
-<section class="slide center" data-who="Todd" aria-label="Slide 16 of 20">
+<section class="slide center" data-who="co" aria-label="Slide 16 of 20">
   <h2>Two trust models, one mechanism</h2>
   <table>
     <thead><tr><th scope="col"></th><th scope="col">isolated-sandbox</th><th scope="col">confidential-sandbox</th></tr></thead>
@@ -794,7 +794,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 17 -->
-<section class="slide" data-who="Todd" aria-label="Slide 17 of 20">
+<section class="slide" data-who="co" aria-label="Slide 17 of 20">
   <h2>Closing the loop: a measured policy and an outside verifier</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 470" role="img" aria-label="Six numbered steps. One: the workload owner runs genpolicy on the manifest. Two: the policy goes on the pod as an annotation. Three: the guest agent enforces it and measures it into PCR17. Four: the guest requests an attestation document from the Nitro Secure Module. Five: KMS checks the key policy condition on PCR17 and PCR8 ServiceName. Six: only on a match is the key released, so encrypted image layers and secrets open inside the guest.">
@@ -866,7 +866,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 18 -->
-<section class="slide center" data-who="Todd" aria-label="Slide 18 of 20">
+<section class="slide center" data-who="co" aria-label="Slide 18 of 20">
   <h2>Reference implementation: Nitro sandboxes on Amazon EKS</h2>
   <table>
     <thead><tr><th scope="col">Layer</th><th scope="col">Open source component</th><th scope="col">In a Nitro sandbox</th></tr></thead>
@@ -921,7 +921,7 @@ route:   <span class="hl">none</span></pre>
     <ul>
       <li>Start with <b>hello sandbox</b>: ten minutes, one line, the proof you saw on slide 7.</li>
       <li>Then the <b>coding agent</b> and the <b>warm pool</b>; they do not depend on each other.</li>
-      <li>From there: managed agents, CI runners, storage, and the <b>confidential</b> blueprints that walk Todd's loop end to end with KMS.</li>
+      <li>From there: managed agents, CI runners, storage, and the <b>confidential</b> blueprints that walk <span class="co-first">Todd</span>'s loop end to end with KMS.</li>
     </ul>
     <p>Scan the code or search for <code>aws-samples sample-eks-nitro-sandbox</code>. Issues and pull requests welcome.</p>
     <p><i>Next:</i> thanks and questions.</p>
@@ -929,7 +929,7 @@ route:   <span class="hl">none</span></pre>
 </section>
 
 <!-- 20 -->
-<section class="slide title-slide" data-who="Carlos + Todd" aria-label="Slide 20 of 20: Thank you">
+<section class="slide title-slide" data-who="Carlos + co" aria-label="Slide 20 of 20: Thank you">
   <h1>Thank you</h1>
   <p class="muted big">Every agent its own kernel. One line on a pod spec.<br>Policy enforced inside the boundary, verified from outside.</p>
   <p style="margin-top:1rem"><span class="pill">github.com/aws-samples/sample-eks-nitro-sandbox</span><span class="pill">kubernetes-sigs/agent-sandbox</span><span class="pill">cedarpolicy.com</span></p>
@@ -939,8 +939,8 @@ route:   <span class="hl">none</span></pre>
       <div><div class="speaker-name">Carlos Santana</div><div class="speaker-title">Sr. Specialist Solutions Architect, AWS</div><a class="speaker-link" href="https://www.linkedin.com/in/csantanapr/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>linkedin.com/in/csantanapr</a></div>
     </div>
     <div class="speaker">
-      <img src="todd-neal.jpg" alt="">
-      <div><div class="speaker-name">Todd Neal</div><div class="speaker-title">Principal Software Engineer, AWS</div><a class="speaker-link" href="https://www.linkedin.com/in/toddneal/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>linkedin.com/in/toddneal</a></div>
+      <img class="co-photo" src="todd-neal.jpg" alt="">
+      <div><div class="speaker-name co-name">Todd Neal</div><div class="speaker-title co-title">Principal Software Engineer, AWS</div><a class="speaker-link co-link" href="https://www.linkedin.com/in/toddneal/"><svg class="li" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg><span>linkedin.com/in/<span class="co-handle">toddneal</span></span></a></div>
     </div>
   </div>
   <aside class="notes">
@@ -962,6 +962,7 @@ route:   <span class="hl">none</span></pre>
       <dt>n</dt><dd>show notes under the slide</dd>
       <dt>f</dt><dd>full screen</dd>
       <dt>?</dt><dd>this help; Esc closes</dd>
+      <dt>?with=aaresh</dt><dd>in the URL: co-presenter Aaresh Sharma instead of Todd Neal</dd>
     </dl>
     <p class="muted" style="font-size:1rem;margin:1rem 0 0">Presenter view: t resets the timer, + and &minus; resize the notes.</p>
   </div>
@@ -972,13 +973,34 @@ route:   <span class="hl">none</span></pre>
   // ? shows the key help. The two windows follow each other.
   // index.html?presenter is the presenter view; index.html?embed is one slide with
   // no keys, used for the previews inside it.
-  const slides = Array.from(document.querySelectorAll('section.slide'));
+  // Co-presenter: index.html?with=aaresh or ?with=todd (default). Fills the speaker blocks on the
+  // title and closing slides, the presenter bar, and every note that names the co-presenter.
+  const PRESENTERS = {
+    todd:   { first: 'Todd',   name: 'Todd Neal',     title: 'Principal Software Engineer, AWS', handle: 'toddneal', photo: 'todd-neal.jpg' },
+    aaresh: { first: 'Aaresh', name: 'Aaresh Sharma', title: 'Senior Specialist Solutions Architect, Containers, AWS', handle: 'aaresh-sharma-452b72116', photo: 'aaresh-sharma.jpg', initials: 'AS' },
+  };
   const params = new URLSearchParams(location.search);
+  const coKey = PRESENTERS[params.get('with')] ? params.get('with') : 'todd';
+  const co = PRESENTERS[coKey];
+  const withQ = coKey === 'todd' ? '' : 'with=' + coKey;
+  document.querySelectorAll('.co-name').forEach((el) => el.textContent = co.name);
+  document.querySelectorAll('.co-title').forEach((el) => el.textContent = co.title);
+  document.querySelectorAll('.co-first').forEach((el) => el.textContent = co.first);
+  document.querySelectorAll('.co-handle').forEach((el) => el.textContent = co.handle);
+  document.querySelectorAll('.co-link').forEach((el) => el.href = 'https://www.linkedin.com/in/' + co.handle + '/');
+  document.querySelectorAll('.co-photo').forEach((el) => {
+    el.src = co.photo;
+    el.addEventListener('error', () => {   // no photo file yet: initials in the same circle
+      const d = document.createElement('div'); d.className = 'avatar'; d.setAttribute('aria-hidden', 'true');
+      d.textContent = co.initials || co.first[0]; el.replaceWith(d);
+    });
+  });
+  const slides = Array.from(document.querySelectorAll('section.slide'));
   const mode = params.has('presenter') ? 'presenter' : params.has('embed') ? 'embed' : 'deck';
   const clamp = (n) => Math.max(0, Math.min(slides.length - 1, n));
   const fromHash = () => clamp((parseInt(location.hash.slice(1), 10) || 1) - 1);
   const title = (k) => (slides[k].querySelector('h1,h2') || {}).textContent.trim() || '';
-  const who = (k) => slides[k].dataset.who || '';
+  const who = (k) => (slides[k].dataset.who || '').replace('co', co.first);
   let i = fromHash();
 
   // Sync: a BroadcastChannel where the browser allows it (http), and
@@ -1013,7 +1035,7 @@ route:   <span class="hl">none</span></pre>
   }
 
   function openPresenter() {
-    const url = location.pathname + '?presenter#' + (i + 1);
+    const url = location.pathname + '?presenter' + (withQ ? '&' + withQ : '') + '#' + (i + 1);
     peer = window.open(url, 'agent-sandbox-talk-presenter', 'width=1500,height=900');
   }
   function toggleFullscreen() {
@@ -1067,7 +1089,7 @@ route:   <span class="hl">none</span></pre>
     pv.timer.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
     pv.clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
-  function frameSrc(k) { return location.pathname + '?embed#' + (k + 1); }
+  function frameSrc(k) { return location.pathname + '?embed' + (withQ ? '&' + withQ : '') + '#' + (k + 1); }
   function fit(box) {
     const f = box.querySelector('iframe');
     if (f) f.style.transform = 'scale(' + box.clientWidth / 1920 + ')';
