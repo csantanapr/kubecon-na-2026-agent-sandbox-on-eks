@@ -144,7 +144,7 @@
 
 <!-- 1 -->
 <section class="slide title-slide" data-who="Carlos" aria-label="Slide 1 of 20: Title">
-  <p class="half">KubeCon + CloudNativeCon North America 2026 &middot; Demo Theater</p>
+  <p class="half">KubeCon + CloudNativeCon North America 2026 &middot; <span class="co-venue">Demo Theater</span></p>
   <h1>Agent Sandbox on EKS:<br>Hardware-Isolated microVM Pods for AI Agents</h1>
   <p class="muted big">Give every agent its own kernel, on a normal pod spec,<br>with open source components you can read.</p>
   <div class="speakers">
@@ -976,8 +976,8 @@ route:   <span class="hl">none</span></pre>
   // Co-presenter: index.html?with=aaresh or ?with=todd (default). Fills the speaker blocks on the
   // title and closing slides, the presenter bar, and every note that names the co-presenter.
   const PRESENTERS = {
-    todd:   { first: 'Todd',   name: 'Todd Neal',     title: 'Principal Software Engineer, AWS', handle: 'toddneal', photo: 'todd-neal.jpg' },
-    aaresh: { first: 'Aaresh', name: 'Aaresh Sharma', title: 'Senior Specialist Solutions Architect, Containers, AWS', handle: 'aaresh-sharma-452b72116', photo: 'aaresh-sharma.jpg', initials: 'AS' },
+    todd:   { first: 'Todd',   name: 'Todd Neal',     title: 'Principal Software Engineer, AWS', handle: 'toddneal', photo: 'todd-neal.jpg', venue: 'Demo Theater' },
+    aaresh: { first: 'Aaresh', name: 'Aaresh Sharma', title: 'Senior Specialist Solutions Architect, Containers, AWS', handle: 'aaresh-sharma-452b72116', photo: 'aaresh-sharma.jpg', initials: 'AS', venue: 'AWS Booth' },
   };
   const params = new URLSearchParams(location.search);
   const coKey = PRESENTERS[params.get('with')] ? params.get('with') : 'todd';
@@ -987,6 +987,7 @@ route:   <span class="hl">none</span></pre>
   document.querySelectorAll('.co-title').forEach((el) => el.textContent = co.title);
   document.querySelectorAll('.co-first').forEach((el) => el.textContent = co.first);
   document.querySelectorAll('.co-handle').forEach((el) => el.textContent = co.handle);
+  document.querySelectorAll('.co-venue').forEach((el) => el.textContent = co.venue);
   document.querySelectorAll('.co-link').forEach((el) => el.href = 'https://www.linkedin.com/in/' + co.handle + '/');
   document.querySelectorAll('.co-photo').forEach((el) => {
     el.src = co.photo;

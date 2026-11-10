@@ -23,9 +23,9 @@ screen. The presenter bar names the speaker for the current slide.
 
 **Co-presenter.** The deck is given twice with different co-presenters. Open
 `slides/index.html` for Todd Neal (the default) or `slides/index.html?with=aaresh` for
-Aaresh Sharma: the title and closing slides, the presenter bar and every note that names the
-co-presenter switch together, and the presenter window inherits the choice. Drop
-`slides/aaresh-sharma.jpg` next to `todd-neal.jpg` to replace the initials.
+Aaresh Sharma: the title and closing slides, the venue line on the title slide (Demo Theater
+with Todd, AWS Booth with Aaresh), the presenter bar and every note that names the
+co-presenter switch together, and the presenter window inherits the choice.
 
 Slides 1 to 10 are Carlos (why, the Kubernetes-native shape, demo); 11 to 18 are the
 co-presenter (RuntimeClass, containerd, the confidential use case, Cedar, attestation, the
@@ -34,6 +34,6 @@ reference implementation); 19 and 20 are the blueprints call to action and thank
 ## Files
 
 - `slides/index.html`: the deck.
-- `slides/carlos-santana.jpg`, `slides/todd-neal.jpg`: speaker photos.
+- `slides/carlos-santana.jpg`, `slides/todd-neal.jpg`, `slides/aaresh-sharma.jpg`: speaker photos.
 - `slides/sandboxing-how-it-works.png`: the slide 11 architecture diagram.
 - `slides/blueprints-qr.svg`: QR code for <https://github.com/aws-samples/sample-eks-nitro-sandbox>.
