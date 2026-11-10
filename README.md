@@ -26,9 +26,12 @@ screen. The presenter bar names the speaker for the current slide.
 Aaresh Sharma: the title and closing slides, the venue line on the title slide (Demo Theater
 with Todd, AWS Booth with Aaresh), the presenter bar and every note that names the
 co-presenter switch together, and the presenter window inherits the choice.
+`slides/index.html?with=solo` is Carlos alone: no co-presenter block, no hand-offs in the
+notes, and no venue on the title slide. Add `&venue=Theater%20B` to any variant to set the
+line above the title.
 
 Slides 1 to 10 are Carlos (why, the Kubernetes-native shape, demo); 11 to 18 are the
-co-presenter (RuntimeClass, containerd, the confidential use case, Cedar, attestation, the
+co-presenter, or Carlos when solo (RuntimeClass, containerd, the confidential use case, Cedar, attestation, the
 reference implementation); 19 and 20 are the blueprints call to action and thanks.
 
 ## Files
