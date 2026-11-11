@@ -34,8 +34,8 @@
   .accent { color: var(--accent); }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.2rem; align-items: start; flex: 1; }
   .grid2 > *, .grid3 > *, .cta > * { min-width: 0; }
-  .grid2.wide-left { grid-template-columns: 1.3fr 1fr; }
-  .grid2.wide-left pre { font-size: 1.35rem; }
+  .grid2.wide-left { grid-template-columns: 1.55fr 1fr; }
+  .grid2.wide-left pre { font-size: 1.27rem; }
   .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1.1rem 1.4rem; }
   .card h3 { margin: 0 0 .4em; font-size: 2.1rem; }
@@ -622,34 +622,33 @@ route:   <span class="hl">none</span></pre>
   <div class="grid2 wide-left">
     <div>
       <p class="lead">containerd: a handler and its shim</p>
-<pre aria-label="containerd config.toml defining a runtime handler named microvm"><code><span class="c"># /etc/containerd/config.toml</span>
-[plugins.<span class="s">'io.containerd.cri.v1.runtime'</span>.containerd.runtimes.<span class="h">microvm</span>]
-  <span class="k">runtime_type</span> = <span class="s">"io.containerd.microvm.v2"</span>
-  <span class="c"># -> binary containerd-shim-microvm-v2 on PATH</span>
-  <span class="k">pod_annotations</span> = [<span class="s">"sandbox.example.com/*"</span>]
-  <span class="c"># annotations the shim may read</span></code></pre>
+<pre aria-label="containerd config.toml defining the isolated-sandbox runtime handler"><code><span class="c"># /etc/containerd/config.toml</span>
+[plugins.<span class="s">'io.containerd.cri.v1.runtime'</span>.containerd.runtimes.<span class="h">isolated-sandbox</span>]
+  <span class="k">runtime_type</span> = <span class="s">"io.containerd.nitro-sandbox.v2"</span>
+  <span class="k">sandboxer</span> = <span class="s">"shim"</span>
+  <span class="k">privileged_without_host_devices</span> = <span class="k">true</span></code></pre>
     </div>
     <div>
       <p class="lead">Kubernetes: the class pods name</p>
-<pre aria-label="RuntimeClass manifest with handler microvm, overhead and scheduling"><code><span class="k">apiVersion</span>: node.k8s.io/v1
+<pre aria-label="RuntimeClass manifest with handler isolated-sandbox, overhead and scheduling"><code><span class="k">apiVersion</span>: node.k8s.io/v1
 <span class="k">kind</span>: RuntimeClass
 <span class="k">metadata</span>:
   <span class="k">name</span>: <span class="h">isolated-sandbox</span>
-<span class="k">handler</span>: <span class="h">microvm</span>
+<span class="k">handler</span>: <span class="h">isolated-sandbox</span>
 <span class="k">overhead</span>:
   <span class="k">podFixed</span>: { <span class="k">memory</span>: <span class="s">"160Mi"</span>, <span class="k">cpu</span>: <span class="s">"250m"</span> }
 <span class="k">scheduling</span>:
   <span class="k">nodeSelector</span>:
-    <span class="k">sandbox.example.com/capable</span>: <span class="s">"true"</span></code></pre>
+    <span class="k">node.example.com/sandbox-capable</span>: <span class="s">"true"</span></code></pre>
       <p class="muted" style="margin-top:1rem">The class carries scheduling and overhead,<br>so the pod spec stays at one line.</p>
     </div>
   </div>
   <aside class="notes">
     <p>Two files. Left is the node, right is the cluster.</p>
     <ul>
-      <li>In containerd, a runtime entry named <code>microvm</code> with a <code>runtime_type</code>. containerd turns <code>io.containerd.microvm.v2</code> into a binary name, <code>containerd-shim-microvm-v2</code>, and starts it. <code>pod_annotations</code> is the allowlist of annotations the shim is handed, which is how <b>network-isolated</b> reaches the runtime.</li>
+      <li>In containerd, a runtime entry named <code>isolated-sandbox</code>. <code>runtime_type</code> names the shim: containerd turns <code>io.containerd.nitro-sandbox.v2</code> into the binary <code>containerd-shim-nitro-sandbox-v2</code> and starts it. <code>sandboxer = "shim"</code> hands the pod sandbox lifecycle to that shim, and <code>privileged_without_host_devices</code> lets a privileged container run inside the guest without passing the node's devices through.</li>
       <li>In Kubernetes, a <b>RuntimeClass</b> whose <code>handler</code> is that name. It also carries the <b>pod overhead</b> the guest costs and a <b>nodeSelector</b> for capable nodes, which is why the pod needs no selector of its own.</li>
-      <li>Values here are illustrative; the shape is what matters.</li>
+      <li>The containerd entry is the real one from a sandbox-enabled node. The RuntimeClass on the right is illustrative, label and numbers included: on EKS Auto Mode the class is already there with its own overhead.</li>
     </ul>
     <p><i>Next:</i> when the node itself is the adversary.</p>
   </aside>
