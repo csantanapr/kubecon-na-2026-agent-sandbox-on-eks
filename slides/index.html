@@ -708,12 +708,12 @@ route:   <span class="hl">none</span></pre>
       <li>The node still holds the pod's <b>credentials</b>, so credentials alone protect nothing. <b>KMS</b> releases keys only to a guest that proves what it is running. The node, with the same credentials and no attestation, is refused.</li>
     </ul>
     <p>Limits, said plainly: the node can still deny service, and this protects the data from the node, not from the workload's own code.</p>
-    <p><i>Next:</i> the gap a kernel boundary alone leaves open.</p>
+    <p><i>Next:</i> the policy language the guest enforces.</p>
   </aside>
 </section>
 
 <!-- 14 -->
-<section class="slide" data-who="co" aria-label="Slide 14 of 21">
+<section class="slide" data-hidden="true" data-who="co" aria-label="Slide 14 of 21">
   <h2>The gap: the node still tells the guest what to run</h2>
   <div class="fill">
     <svg viewBox="0 0 1200 460" role="img" aria-label="The node sends requests into the microVM: create container with an image, args and mounts; exec; read logs. The guest agent receives them. A question asks who decides whether to obey when the node itself is untrusted.">
@@ -789,12 +789,12 @@ route:   <span class="hl">none</span></pre>
       <li>You do not write it by hand. <code>genpolicy</code> reads the manifest, resolves the tag to a digest, and emits the policy. It goes on the pod as an annotation and the guest agent evaluates it on <b>every</b> request: create, exec, logs, mounts.</li>
       <li>It is <b>analyzable</b>: the language is designed so tools can answer "what does this policy allow" rather than just "did this request pass".</li>
     </ul>
-    <p><i>Next:</i> two trust models on one mechanism.</p>
+    <p><i>Next:</i> closing the loop with attestation.</p>
   </aside>
 </section>
 
 <!-- 16 -->
-<section class="slide center" data-who="co" aria-label="Slide 16 of 21">
+<section class="slide center" data-hidden="true" data-who="co" aria-label="Slide 16 of 21">
   <h2>Two trust models, one mechanism</h2>
   <table>
     <thead><tr><th scope="col"></th><th scope="col">isolated-sandbox</th><th scope="col">confidential-sandbox</th></tr></thead>
@@ -886,12 +886,12 @@ route:   <span class="hl">none</span></pre>
       <li><b>5, 6</b>: the KMS key policy requires that exact PCR17 and the EKS service name on PCR8. A substituted policy means a different PCR17, so <code>kms:Decrypt</code> fails and the encrypted layers never open. Only the intended policy gets the key.</li>
     </ul>
     <p>Any verifier that checks the attestation document works here. KMS is the one you already have.</p>
-    <p><i>Next:</i> how all of this maps onto the reference implementation.</p>
+    <p><i>Next:</i> <span class="duo">Carlos, </span>where to start.</p>
   </aside>
 </section>
 
 <!-- 18 -->
-<section class="slide center" data-who="co" aria-label="Slide 18 of 21">
+<section class="slide center" data-hidden="true" data-who="co" aria-label="Slide 18 of 21">
   <h2>Reference implementation: Nitro sandboxes on Amazon EKS</h2>
   <table>
     <thead><tr><th scope="col">Layer</th><th scope="col">Open source component</th><th scope="col">In a Nitro sandbox</th></tr></thead>
@@ -1023,6 +1023,7 @@ route:   <span class="hl">none</span></pre>
       <dt>?with=aaresh</dt><dd>in the URL: co-presenter Aaresh Sharma instead of Todd Neal</dd>
       <dt>?with=solo</dt><dd>Carlos alone</dd>
       <dt>&amp;venue=...</dt><dd>adds a venue after the conference name on the title slide</dd>
+      <dt>?all</dt><dd>also show the hidden slides (the gap, two trust models, reference table)</dd>
     </dl>
     <p class="muted" style="font-size:1rem;margin:1rem 0 0">Presenter view: t resets the timer, + and &minus; resize the notes.</p>
   </div>
@@ -1061,7 +1062,9 @@ route:   <span class="hl">none</span></pre>
     });
   });
   }
-  const slides = Array.from(document.querySelectorAll('section.slide'));
+  // Slides with data-hidden are left out of the run (and the counter); ?all puts them back.
+  const showAll = new URLSearchParams(location.search).has('all');
+  const slides = Array.from(document.querySelectorAll('section.slide')).filter((el) => showAll || !el.dataset.hidden);
   const mode = params.has('presenter') ? 'presenter' : params.has('embed') ? 'embed' : 'deck';
   const clamp = (n) => Math.max(0, Math.min(slides.length - 1, n));
   const fromHash = () => clamp((parseInt(location.hash.slice(1), 10) || 1) - 1);
@@ -1182,7 +1185,7 @@ route:   <span class="hl">none</span></pre>
         '<div class="pv-next">' +
           '<div class="pv-frame nxt"><iframe title="Next slide" tabindex="-1"></iframe><div class="pv-end" hidden>End of deck</div></div>' +
           '<div><div class="pv-label">Next</div><div class="pv-next-title"></div>' +
-          '<p class="pv-keys">&larr; &rarr; move &middot; t reset timer &middot; + / &minus; notes size &middot; 20 min total, about 1 min a slide; the last slide stays up</p></div>' +
+          '<p class="pv-keys">&larr; &rarr; move &middot; t reset timer &middot; + / &minus; notes size &middot; 20 min total; the last slide stays up</p></div>' +
         '</div>' +
       '</div>' +
       '<div class="pv-notes" aria-live="polite" aria-label="Speaker notes"></div>';
